@@ -1,26 +1,302 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+@theme {
+  --color-brand-50:  #f0f7f3;
+  --color-brand-100: #dceddd;
+  --color-brand-200: #b8d9ba;
+  --color-brand-300: #88be8b;
+  --color-brand-400: #56a05a;
+  --color-brand-500: #348438;
+  --color-brand-600: #256b29;
+  --color-brand-700: #1e5522;
+  --color-brand-800: #19431c;
+  --color-brand-900: #0D2B1A;
+  --color-brand-950: #071508;
+  --color-gold-300: #e8c97a;
+  --color-gold-400: #d4a855;
+  --color-gold-500: #c9a84c;
+  --color-gold-600: #b8963a;
+  --color-surface:   #f2f7f4;
+  --color-surface-2: #e8f0eb;
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
+/* ── Reset ─────────────────────────────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
-
+/* ── Mesh gradient background + logo watermark ─────────────────────────────── */
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-sans);
+  color: #0a0a0a;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  min-height: 100vh;
+
+  /* Clean light background */
+  background-color: #f7f9f7;
 }
+
+/* Logo watermark — truly fixed, white parts removed via multiply blend */
+body::before {
+  content: '';
+  position: fixed;
+  left: 50%;
+  top:  50%;
+  transform: translate(-50%, -50%);
+  width:  58vw;
+  height: 42vw;
+  background: url('/logo.png') center / contain no-repeat;
+  opacity: 0.06;
+  mix-blend-mode: multiply;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Ensure all layout content sits above watermark */
+body > * { position: relative; z-index: 1; }
+
+/* Force all foreground text to proper black — overrides greenish brand-900 */
+[class*="text-brand-900"] { color: #111111 !important; }
+[class*="text-brand-800"] { color: #222222 !important; }
+[class*="text-brand-700"] { color: #333333 !important; }
+
+/* ── Glass — hierarchical blur, truly transparent (no colour tint) ─────────── */
+
+/* Layer 1 — base cards */
+.glass {
+  background:              rgba(255, 255, 255, 0.85);
+  backdrop-filter:         blur(64px);
+  -webkit-backdrop-filter: blur(64px);
+  border:                  1.5px solid rgba(255, 255, 255, 0.42);
+  box-shadow:
+    0 32px 80px  rgba(0, 0, 0, 0.18),
+    0  8px 24px  rgba(0, 0, 0, 0.10),
+    inset 0  1px 0 rgba(255, 255, 255, 0.70),
+    inset 0 -1px 0 rgba(0,   0,   0,   0.05);
+}
+
+/* Layer 2 — elevated panels */
+.glass-strong {
+  background:              rgba(255, 255, 255, 0.90);
+  backdrop-filter:         blur(88px);
+  -webkit-backdrop-filter: blur(88px);
+  border:                  1.5px solid rgba(255, 255, 255, 0.50);
+  box-shadow:
+    0 48px 110px rgba(0, 0, 0, 0.22),
+    0 14px 36px  rgba(0, 0, 0, 0.12),
+    inset 0  1px 0 rgba(255, 255, 255, 0.80),
+    inset 0 -1px 0 rgba(0,   0,   0,   0.05);
+}
+
+/* Layer 3 — sidebar: dark tint so white text is always readable */
+.glass-dark {
+  background:              rgba(5, 20, 8, 0.68);
+  backdrop-filter:         blur(120px);
+  -webkit-backdrop-filter: blur(120px);
+  border-right:            1.5px solid rgba(255, 255, 255, 0.10);
+  box-shadow:              16px 0 90px rgba(0, 0, 0, 0.50);
+}
+
+/* ── Scrollbar ─────────────────────────────────────────────────────────────── */
+::-webkit-scrollbar        { width: 4px; height: 4px; }
+::-webkit-scrollbar-track  { background: transparent; }
+::-webkit-scrollbar-thumb  { background: rgba(13,43,26,0.28); border-radius: 10px; }
+::-webkit-scrollbar-thumb:hover { background: rgba(13,43,26,0.50); }
+
+/* ── Animations ────────────────────────────────────────────────────────────── */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(18px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+@keyframes slideIn {
+  from { transform: translateX(-100%); }
+  to   { transform: translateX(0); }
+}
+.animate-fade-up { animation: fadeUp  0.40s ease-out both; }
+.animate-fade-in { animation: fadeIn  0.28s ease-out both; }
+
+/* ── Sidebar nav items ─────────────────────────────────────────────────────── */
+.sidebar-nav-item {
+  display:         flex;
+  align-items:     center;
+  gap:             12px;
+  padding:         13px 18px;
+  border-radius:   13px;
+  font-size:       15px;
+  font-weight:     600;
+  color:           rgba(255, 255, 255, 0.88);
+  transition:      all 0.18s ease;
+  cursor:          pointer;
+  text-decoration: none;
+  margin-bottom:   6px;
+  text-shadow:     0 1px 4px rgba(0,0,0,0.40);
+}
+.sidebar-nav-item:hover {
+  background: rgba(255, 255, 255, 0.14);
+  color:      #ffffff;
+}
+.sidebar-nav-item.active {
+  background:   rgba(255, 255, 255, 0.16);
+  color:        #ffffff;
+  border-left:  2.5px solid #c9a84c;
+  padding-left: 16px;
+  box-shadow:   inset 0 1px 0 rgba(255,255,255,0.12), 0 2px 16px rgba(0,0,0,0.18);
+}
+.sidebar-section-label {
+  font-size:      11px;
+  font-weight:    700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color:          rgba(255, 255, 255, 0.30);
+  padding:        0 18px;
+  margin:         22px 0 7px;
+}
+
+/* ── Form inputs — shiny water ──────────────────────────────────────────────── */
+.input-field {
+  width:           100%;
+  padding:         13px 17px;
+  background:      linear-gradient(
+    160deg,
+    rgba(255, 255, 255, 0.55) 0%,
+    rgba(255, 255, 255, 0.08) 55%,
+    rgba(220, 242, 228, 0.18) 100%
+  );
+  border:          1px solid rgba(255, 255, 255, 0.65);
+  border-bottom:   1px solid rgba(52, 132, 56, 0.22);
+  border-right:    1px solid rgba(52, 132, 56, 0.14);
+  border-radius:   11px;
+  font-size:       15.5px;
+  color:           #0a0a0a;
+  font-weight:     500;
+  transition:      all 0.18s ease;
+  outline:         none;
+  backdrop-filter: blur(18px) saturate(180%);
+  -webkit-backdrop-filter: blur(18px) saturate(180%);
+  box-shadow:
+    inset 0 2px 0   rgba(255, 255, 255, 0.92),
+    inset 0 -1px 0  rgba(52, 132, 56, 0.10),
+    inset 1px 0 0   rgba(255, 255, 255, 0.45),
+    0 4px 14px      rgba(13, 43, 26, 0.07);
+}
+.input-field:focus {
+  background:   linear-gradient(
+    160deg,
+    rgba(255, 255, 255, 0.72) 0%,
+    rgba(255, 255, 255, 0.18) 55%,
+    rgba(220, 242, 228, 0.28) 100%
+  );
+  border-color:  rgba(52, 132, 56, 0.55);
+  border-bottom-color: rgba(52, 132, 56, 0.55);
+  border-right-color:  rgba(52, 132, 56, 0.30);
+  box-shadow:
+    inset 0 2px 0   rgba(255, 255, 255, 0.95),
+    inset 0 -1px 0  rgba(52, 132, 56, 0.14),
+    inset 1px 0 0   rgba(255, 255, 255, 0.55),
+    0 0 0 3px       rgba(52, 132, 56, 0.13),
+    0 6px 20px      rgba(13, 43, 26, 0.10);
+}
+.input-field::placeholder { color: rgba(0, 0, 0, 0.28); }
+
+/* ── Form section cards — shiny glass ──────────────────────────────────────── */
+.form-card {
+  background:      linear-gradient(
+    145deg,
+    rgba(255, 255, 255, 0.88) 0%,
+    rgba(255, 255, 255, 0.58) 40%,
+    rgba(236, 248, 240, 0.72) 100%
+  );
+  backdrop-filter:         blur(48px) saturate(160%);
+  -webkit-backdrop-filter: blur(48px) saturate(160%);
+  border:          1px solid rgba(255, 255, 255, 0.75);
+  border-top:      2.5px solid rgba(255, 255, 255, 0.95);
+  border-bottom:   1px solid rgba(52, 132, 56, 0.14);
+  border-radius:   16px;
+  box-shadow:
+    0 16px 48px  rgba(13, 43, 26, 0.11),
+    0  4px 14px  rgba(13, 43, 26, 0.07),
+    inset 0  2px 0  rgba(255, 255, 255, 1),
+    inset 0 -1px 0  rgba(52, 132, 56, 0.06);
+}
+
+/* ── Buttons ───────────────────────────────────────────────────────────────── */
+.btn-primary {
+  display:         inline-flex;
+  align-items:     center;
+  justify-content: center;
+  gap:             9px;
+  padding:         13px 26px;
+  background:      linear-gradient(140deg, #1e5c32 0%, #0d2b1a 100%);
+  color:           #ffffff;
+  border-radius:   13px;
+  font-size:       15.5px;
+  font-weight:     600;
+  border:          1px solid rgba(255, 255, 255, 0.18);
+  cursor:          pointer;
+  transition:      all 0.20s ease;
+  box-shadow:
+    0 6px 22px rgba(13,43,26,0.40),
+    inset 0 1px 0 rgba(255,255,255,0.20);
+}
+.btn-primary:hover {
+  background: linear-gradient(140deg, #256b39 0%, #1a4731 100%);
+  transform:  translateY(-2px);
+  box-shadow:
+    0 12px 36px rgba(13,43,26,0.52),
+    0 0 0 1px rgba(52,132,56,0.32),
+    inset 0 1px 0 rgba(255,255,255,0.26);
+}
+.btn-primary:active   { transform: translateY(0); }
+.btn-primary:disabled { opacity: 0.55; cursor: not-allowed; transform: none; box-shadow: none; }
+
+.btn-outline {
+  display:         inline-flex;
+  align-items:     center;
+  justify-content: center;
+  gap:             9px;
+  padding:         12px 24px;
+  background:      rgba(255, 255, 255, 0.12);
+  color:           #0d2b1a;
+  border-radius:   13px;
+  font-size:       15.5px;
+  font-weight:     500;
+  border:          1.5px solid rgba(13, 43, 26, 0.26);
+  cursor:          pointer;
+  transition:      all 0.18s ease;
+  backdrop-filter: blur(10px);
+}
+.btn-outline:hover {
+  border-color: rgba(13,43,26,0.55);
+  background:   rgba(255,255,255,0.26);
+  box-shadow:   0 4px 16px rgba(13,43,26,0.14);
+}
+
+/* ── Table ─────────────────────────────────────────────────────────────────── */
+.tms-table { width: 100%; border-collapse: collapse; font-size: 15px; }
+.tms-table thead th {
+  text-align:     left;
+  padding:        14px 18px;
+  font-size:      12px;
+  font-weight:    800;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color:          rgba(0, 0, 0, 0.65);
+  background:     rgba(0, 0, 0, 0.04);
+  border-bottom:  1.5px solid rgba(0, 0, 0, 0.08);
+}
+.tms-table tbody tr {
+  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+  transition:    background 0.14s;
+}
+.tms-table tbody tr:hover { background: rgba(255,255,255,0.22); }
+.tms-table tbody td {
+  padding: 15px 18px; color: #0a0a0a; vertical-align: middle; font-weight: 600;
+}
+
+/* ── Page enter ────────────────────────────────────────────────────────────── */
+.page-content { animation: fadeUp 0.38s ease-out both; }

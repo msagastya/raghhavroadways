@@ -1,0 +1,418 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+// ─── AUTH ────────────────────────────────────────────────────────────────────
+
+model User {
+  id        String   @id @default(cuid())
+  name      String
+  email     String   @unique
+  password  String
+  phone     String?
+  roleId    String
+  role      Role     @relation(fields: [roleId], references: [id])
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  sessions               Session[]
+  accounts               Account[]
+  paymentsCreated        Payment[]        @relation("PaymentCreator")
+  vehiclePaymentsCreated VehiclePayment[] @relation("VehiclePaymentCreator")
+  ledgerEntriesCreated   LedgerEntry[]    @relation("LedgerEntryCreator")
+}
+
+model Role {
+  id          String           @id @default(cuid())
+  name        String           @unique
+  description String?
+  isSystem    Boolean          @default(false)
+  users       User[]
+  permissions RolePermission[]
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
+}
+
+model Permission {
+  id          String           @id @default(cuid())
+  module      String
+  action      String
+  description String?
+  roles       RolePermission[]
+
+  @@unique([module, action])
+}
+
+model RolePermission {
+  roleId       String
+  permissionId String
+  role         Role       @relation(fields: [roleId], references: [id], onDelete: Cascade)
+  permission   Permission @relation(fields: [permissionId], references: [id], onDelete: Cascade)
+
+  @@id([roleId, permissionId])
+}
+
+// ─── PARTIES ─────────────────────────────────────────────────────────────────
+
+model Party {
+  id              String    @id @default(cuid())
+  type            PartyType
+  name            String
+  phone           String?
+  altPhone        String?
+  email           String?
+  address         String?
+  city            String?
+  state           String?
+  pincode         String?
+  gstin           String?
+  pan             String?
+  creditDays      Int?      @default(45)
+  creditLimit     Float?
+  commissionType  String?
+  commissionValue Float?
+  notes           String?
+  isActive        Boolean   @default(true)
+  deletedAt       DateTime?
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  vehicles           Vehicle[]
+  consignmentsOrigin Consignment[]    @relation("Consignor")
+  consignmentsDest   Consignment[]    @relation("Consignee")
+  consignmentsAgent  Consignment[]    @relation("BookingAgent")
+  bills              Bill[]
+  paymentsIn         Payment[]
+  vehiclePayments    VehiclePayment[]
+  ledgerEntries      LedgerEntry[]
+}
+
+enum PartyType {
+  COMPANY
+  AGENT
+  VEHICLE_OWNER
+}
+
+// ─── VEHICLES ────────────────────────────────────────────────────────────────
+
+model Vehicle {
+  id            String        @id @default(cuid())
+  vehicleNumber String        @unique
+  type          String
+  capacity      Float?
+  ownerId       String
+  owner         Party         @relation(fields: [ownerId], references: [id])
+  status        VehicleStatus @default(AVAILABLE)
+  notes         String?
+  isActive      Boolean       @default(true)
+  deletedAt     DateTime?
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+
+  consignments Consignment[]
+  documents    VehicleDocument[]
+  incidents    VehicleIncident[]
+}
+
+enum VehicleStatus {
+  AVAILABLE
+  ON_TRIP
+  IN_REPAIR
+  INACTIVE
+}
+
+model VehicleDocument {
+  id          String    @id @default(cuid())
+  vehicleId   String
+  vehicle     Vehicle   @relation(fields: [vehicleId], references: [id], onDelete: Cascade)
+  type        String
+  documentNo  String?
+  issueDate   DateTime?
+  expiryDate  DateTime?
+  fileUrl     String?
+  notes       String?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+}
+
+model VehicleIncident {
+  id          String   @id @default(cuid())
+  vehicleId   String
+  vehicle     Vehicle  @relation(fields: [vehicleId], references: [id], onDelete: Cascade)
+  date        DateTime
+  description String
+  cost        Float?
+  status      String   @default("OPEN")
+  resolution  String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+// ─── CONSIGNMENTS ─────────────────────────────────────────────────────────────
+
+model Consignment {
+  id          String            @id @default(cuid())
+  lrNumber    String            @unique
+  bookingDate DateTime          @default(now())
+
+  consignorId String
+  consignor   Party             @relation("Consignor", fields: [consignorId], references: [id])
+  consigneeId String
+  consignee   Party             @relation("Consignee", fields: [consigneeId], references: [id])
+  agentId     String?
+  agent       Party?            @relation("BookingAgent", fields: [agentId], references: [id])
+
+  fromCity      String
+  fromState     String
+  toCity        String
+  toState       String
+
+  description   String
+  freightType   FreightType       @default(FTL)
+  weight        Float?
+  quantity      Int?
+  unit          String?
+  declaredValue Float?
+
+  freightAmount      Float
+  paymentType        PaymentType    @default(TBB)
+  ewayBillNumber     String?
+  ewayBillDocUrl     String?
+  invoiceChallanNo   String?
+  challanDocUrl      String?
+
+  vehicleId   String?
+  vehicle     Vehicle?       @relation(fields: [vehicleId], references: [id])
+  driverName  String?
+  driverPhone String?
+
+  vehicleFreight Float?
+  advancePaid    Float          @default(0)
+  balancePaid    Float          @default(0)
+
+  status    ConsignmentStatus @default(BOOKED)
+  notes     String?
+  createdAt DateTime          @default(now())
+  updatedAt DateTime          @updatedAt
+
+  bills           Bill[]
+  statusHistory   ConsignmentLog[]
+  documents       ConsignmentDocument[]
+  vehiclePayments VehiclePayment[]
+}
+
+enum FreightType {
+  FTL
+  LTL
+  WEIGHT_BASIS
+  OTHER
+}
+
+enum PaymentType {
+  PAID
+  TO_PAY
+  TBB
+}
+
+enum ConsignmentStatus {
+  BOOKED
+  IN_TRANSIT
+  DELIVERED
+  BILLED
+  PARTIALLY_PAID
+  PAID
+  CANCELLED
+}
+
+model ConsignmentLog {
+  id            String            @id @default(cuid())
+  consignmentId String
+  consignment   Consignment       @relation(fields: [consignmentId], references: [id], onDelete: Cascade)
+  status        ConsignmentStatus
+  note          String?
+  createdAt     DateTime          @default(now())
+}
+
+model ConsignmentDocument {
+  id            String      @id @default(cuid())
+  consignmentId String
+  consignment   Consignment @relation(fields: [consignmentId], references: [id], onDelete: Cascade)
+  type          String
+  fileUrl       String?
+  notes         String?
+  createdAt     DateTime    @default(now())
+}
+
+// ─── BILLING ─────────────────────────────────────────────────────────────────
+
+model Bill {
+  id            String      @id @default(cuid())
+  billNumber    String      @unique
+  billDate      DateTime    @default(now())
+  dueDate       DateTime?
+
+  partyId       String
+  party         Party       @relation(fields: [partyId], references: [id])
+  consignmentId String?
+  consignment   Consignment? @relation(fields: [consignmentId], references: [id])
+
+  subtotal    Float
+  cgst        Float      @default(0)
+  sgst        Float      @default(0)
+  igst        Float      @default(0)
+  totalAmount Float
+  paidAmount  Float      @default(0)
+
+  isInterstate Boolean    @default(false)
+  gstRate      Float      @default(5)
+
+  status      BillStatus @default(DRAFT)
+  description String?
+  notes       String?
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+
+  payments Payment[]
+}
+
+enum BillStatus {
+  DRAFT
+  GENERATED
+  SENT
+  PARTIALLY_PAID
+  PAID
+  CANCELLED
+}
+
+// ─── PAYMENTS ────────────────────────────────────────────────────────────────
+
+model Payment {
+  id          String   @id @default(cuid())
+  date        DateTime @default(now())
+  partyId     String
+  party       Party    @relation(fields: [partyId], references: [id])
+  billId      String?
+  bill        Bill?    @relation(fields: [billId], references: [id])
+  amount      Float
+  mode        String
+  reference   String?
+  tdsAmount   Float    @default(0)
+  notes       String?
+  createdById String?
+  createdBy   User?    @relation("PaymentCreator", fields: [createdById], references: [id])
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  ledgerEntries LedgerEntry[]
+}
+
+model VehiclePayment {
+  id            String       @id @default(cuid())
+  date          DateTime     @default(now())
+  partyId       String
+  party         Party        @relation(fields: [partyId], references: [id])
+  consignmentId String?
+  consignment   Consignment? @relation(fields: [consignmentId], references: [id])
+  amount        Float
+  type          String
+  mode          String
+  reference     String?
+  notes         String?
+  createdById   String?
+  createdBy     User?        @relation("VehiclePaymentCreator", fields: [createdById], references: [id])
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+
+  ledgerEntries LedgerEntry[]
+}
+
+// ─── LEDGER ──────────────────────────────────────────────────────────────────
+
+model LedgerEntry {
+  id               String          @id @default(cuid())
+  date             DateTime        @default(now())
+  partyId          String?
+  party            Party?          @relation(fields: [partyId], references: [id])
+  type             LedgerType
+  debit            Float           @default(0)
+  credit           Float           @default(0)
+  balance          Float           @default(0)
+  description      String
+  paymentId        String?
+  payment          Payment?        @relation(fields: [paymentId], references: [id])
+  vehiclePaymentId String?
+  vehiclePayment   VehiclePayment? @relation(fields: [vehiclePaymentId], references: [id])
+  createdById      String?
+  createdBy        User?           @relation("LedgerEntryCreator", fields: [createdById], references: [id])
+  createdAt        DateTime        @default(now())
+}
+
+enum LedgerType {
+  RECEIVABLE
+  PAYABLE
+  INCOME
+  EXPENSE
+}
+
+// ─── SYSTEM ──────────────────────────────────────────────────────────────────
+
+model SystemSetting {
+  id        String   @id @default(cuid())
+  key       String   @unique
+  value     String
+  updatedAt DateTime @updatedAt
+}
+
+model Notification {
+  id         String   @id @default(cuid())
+  type       String
+  title      String
+  message    String
+  isRead     Boolean  @default(false)
+  entityType String?
+  entityId   String?
+  createdAt  DateTime @default(now())
+}
+
+// ─── NEXTAUTH ────────────────────────────────────────────────────────────────
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+  user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
