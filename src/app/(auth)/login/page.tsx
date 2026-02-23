@@ -67,17 +67,16 @@ function LoginForm() {
           <div
             className="w-16 h-16 rounded-2xl flex items-center justify-center mb-4 overflow-hidden"
             style={{
-              background: "#0D2B1A",
-              boxShadow: "0 8px 24px rgba(13,43,26,0.30)",
+              background: "#ffffff",
+              boxShadow: "0 8px 24px rgba(13,43,26,0.20)",
             }}
           >
             <Image
               src="/logo.png"
               alt="Raghhav Roadways"
-              width={44}
-              height={44}
+              width={48}
+              height={48}
               className="object-contain"
-              style={{ filter: "brightness(0) invert(1)" }}
               unoptimized
             />
           </div>
