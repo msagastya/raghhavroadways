@@ -1,7 +1,6 @@
 "use client"
 
 import Link from "next/link"
-import Image from "next/image"
 import { usePathname } from "next/navigation"
 import { signOut, useSession } from "next-auth/react"
 import { useState } from "react"
@@ -148,14 +147,13 @@ export default function Sidebar({ onClose }: { onClose?: () => void }) {
       <div className="px-5 pt-6 pb-5 border-b border-white/10">
         <div className="flex items-center gap-3.5">
           <div className="w-12 h-12 flex items-center justify-center shrink-0">
-            <Image
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
               src="/logo.png"
               alt="Raghhav Roadways"
               width={44}
               height={44}
-              className="object-contain"
-              style={{ filter: "brightness(0) invert(1)" }}
-              unoptimized
+              style={{ objectFit: "contain", filter: "invert(1)" }}
             />
           </div>
           <div className="min-w-0">
