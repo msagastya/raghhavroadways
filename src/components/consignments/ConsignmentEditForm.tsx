@@ -52,7 +52,10 @@ interface Consignment {
   declaredValue: number | null
   freightAmount: number
   paymentType:   string
-  ewayBillNumber: string | null
+  ewayBillNumber:   string | null
+  ewayBillDocUrl:   string | null
+  invoiceChallanNo: string | null
+  challanDocUrl:    string | null
   vehicleId:     string | null
   driverName:    string | null
   driverPhone:   string | null
