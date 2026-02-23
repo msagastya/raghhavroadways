@@ -22,6 +22,7 @@ import {
   ChevronRight,
   LogOut,
   UserCircle,
+  Landmark,
 } from "lucide-react"
 
 interface NavItem {
@@ -48,6 +49,7 @@ const navigation: NavItem[] = [
     icon: Users,
     children: [
       { label: "Companies", href: "/parties/companies", icon: Building2 },
+      { label: "Billing Parties", href: "/parties/billing-parties", icon: Landmark },
       { label: "Agents", href: "/parties/agents", icon: UserCheck },
       { label: "Vehicle Owners", href: "/parties/vehicle-owners", icon: KeyRound },
     ],

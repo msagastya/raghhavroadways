@@ -177,10 +177,10 @@ export default function BillForm({ companies, unbilledConsignments, preselectedC
       <div className="glass rounded-2xl p-6">
         <S>Bill Details</S>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <F label="Party (Consignor / Billed To)" required>
+          <F label="Billing Party (Billed To)" required>
             <select className="input-field bg-white" value={form.partyId}
                     onChange={(e) => handlePartyChange(e.target.value)} required>
-              <option value="">Select company...</option>
+              <option value="">Select billing party...</option>
               {companies.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
             </select>
           </F>

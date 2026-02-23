@@ -23,9 +23,9 @@ export default async function NewBillPage({
     : null
 
 
-  // All active companies for party select
+  // All active billing parties for party select
   const companies = await prisma.party.findMany({
-    where:   { type: "COMPANY", isActive: true },
+    where:   { type: "BILLING_PARTY", isActive: true },
     select:  { id: true, name: true, gstin: true, state: true, creditDays: true },
     orderBy: { name: "asc" },
   })

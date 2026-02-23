@@ -98,6 +98,7 @@ enum PartyType {
   COMPANY
   AGENT
   VEHICLE_OWNER
+  BILLING_PARTY
 }
 
 // ─── VEHICLES ────────────────────────────────────────────────────────────────

@@ -13,6 +13,7 @@ const TYPE_LABELS: Record<PartyType, string> = {
   COMPANY: "Company",
   AGENT: "Agent",
   VEHICLE_OWNER: "Vehicle Owner",
+  BILLING_PARTY: "Billing Party",
 }
 
 interface PartyFormProps {
@@ -80,6 +81,7 @@ export default function PartyForm({ type, initialData, mode }: PartyFormProps) {
     COMPANY: "/parties/companies",
     AGENT: "/parties/agents",
     VEHICLE_OWNER: "/parties/vehicle-owners",
+    BILLING_PARTY: "/parties/billing-parties",
   }
 
   function handleSubmit(e: React.FormEvent) {

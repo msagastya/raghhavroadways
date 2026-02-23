@@ -29,6 +29,7 @@ const BASE_PATHS: Record<PartyType, string> = {
   COMPANY:       "/parties/companies",
   AGENT:         "/parties/agents",
   VEHICLE_OWNER: "/parties/vehicle-owners",
+  BILLING_PARTY: "/parties/billing-parties",
 }
 
 function validatePartyInput(data: PartyInput): string | null {
