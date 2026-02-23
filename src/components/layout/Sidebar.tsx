@@ -146,14 +146,14 @@ export default function Sidebar({ onClose }: { onClose?: () => void }) {
       {/* Logo */}
       <div className="px-5 pt-6 pb-5 border-b border-white/10">
         <div className="flex items-center gap-3.5">
-          <div className="w-12 h-12 flex items-center justify-center shrink-0">
+          <div className="w-10 h-10 rounded-xl bg-white flex items-center justify-center shrink-0 overflow-hidden">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src="/logo.png"
               alt="Raghhav Roadways"
-              width={44}
-              height={44}
-              style={{ objectFit: "contain", filter: "invert(1)" }}
+              width={36}
+              height={36}
+              style={{ objectFit: "contain" }}
             />
           </div>
           <div className="min-w-0">
