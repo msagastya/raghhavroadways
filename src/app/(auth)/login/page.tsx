@@ -3,7 +3,6 @@
 import { Suspense, useState } from "react"
 import { signIn } from "next-auth/react"
 import { useRouter, useSearchParams } from "next/navigation"
-import Image from "next/image"
 import { Eye, EyeOff, LogIn, Loader2 } from "lucide-react"
 import toast from "react-hot-toast"
 
@@ -71,13 +70,13 @@ function LoginForm() {
               boxShadow: "0 8px 24px rgba(13,43,26,0.20)",
             }}
           >
-            <Image
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
               src="/logo.png"
               alt="Raghhav Roadways"
               width={48}
               height={48}
-              className="object-contain"
-              unoptimized
+              style={{ objectFit: "contain" }}
             />
           </div>
 
