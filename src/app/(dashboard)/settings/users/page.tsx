@@ -6,7 +6,7 @@ import { Users } from "lucide-react"
 import AddUserForm from "@/components/settings/AddUserForm"
 import UserRow from "@/components/settings/UserRow"
 
-export const dynamic = "force-dynamic"
+export const revalidate = 300
 
 export default async function UsersPage() {
   const [users, roles] = await Promise.all([

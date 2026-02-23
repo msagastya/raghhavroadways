@@ -7,7 +7,7 @@ import ChangePasswordForm from "@/components/settings/ChangePasswordForm"
 import { Building2, Hash, Users, Lock } from "lucide-react"
 import Link from "next/link"
 
-export const dynamic = "force-dynamic"
+export const revalidate = 300
 
 export default async function SettingsPage() {
   const settings = await prisma.systemSetting.findMany()
