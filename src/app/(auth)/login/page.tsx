@@ -65,7 +65,7 @@ function LoginForm() {
         {/* Logo + branding */}
         <div className="flex flex-col items-center mb-8">
           <div
-            className="w-16 h-16 rounded-2xl flex items-center justify-center mb-4"
+            className="w-16 h-16 rounded-2xl flex items-center justify-center mb-4 overflow-hidden"
             style={{
               background: "#0D2B1A",
               boxShadow: "0 8px 24px rgba(13,43,26,0.30)",
