@@ -317,3 +317,15 @@ body > * { position: relative; z-index: 1; }
     padding: 10px 12px;
   }
 }
+
+/* ── Sidebar spacer: push content on desktop only, never on mobile ────────── */
+.sidebar-spacer {
+  flex-shrink: 0;
+  width: 0;
+  transition: width 300ms ease-in-out;
+}
+@media (min-width: 768px) {
+  .sidebar-spacer[data-open="true"] {
+    width: 280px;
+  }
+}

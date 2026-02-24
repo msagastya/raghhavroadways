@@ -31,10 +31,8 @@ export default function DashboardLayout({
   return (
     <div className="flex h-screen overflow-hidden">
 
-      {/* Spacer — pushes content right on desktop only; always 0 on mobile (overlay mode) */}
-      <div
-        className={`flex-shrink-0 transition-[width] duration-300 ease-in-out w-0${open ? " md:w-[280px]" : ""}`}
-      />
+      {/* Spacer — pushes content right on desktop only, never on mobile */}
+      <div className="sidebar-spacer" data-open={String(open)} />
 
       {/* Hover trigger strip — desktop only */}
       <div
