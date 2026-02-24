@@ -7,7 +7,7 @@ import Badge from "@/components/ui/Badge"
 import EmptyState from "@/components/ui/EmptyState"
 import SearchBar from "@/components/ui/SearchBar"
 import Pagination from "@/components/ui/Pagination"
-import { PackageSearch, Plus, Eye } from "lucide-react"
+import { PackageSearch, Plus, Eye, ChevronRight } from "lucide-react"
 import { formatCurrency, formatDate } from "@/lib/utils"
 import { ConsignmentStatus } from "@prisma/client"
 
@@ -67,7 +67,36 @@ async function ConsignmentList({ q, status, page }: { q: string; status: string;
 
   return (
     <div>
-      <div className="overflow-x-auto">
+      {/* Mobile card list */}
+      <div className="md:hidden divide-y divide-brand-900/5">
+        {consignments.map((c) => (
+          <Link href={`/consignments/${c.id}`} key={c.id}
+                className="flex items-start justify-between gap-3 px-4 py-3.5 hover:bg-brand-900/3 active:bg-brand-900/5 transition-colors">
+            <div className="min-w-0 flex-1">
+              <div className="flex items-center justify-between gap-2 mb-1">
+                <span className="font-semibold font-mono text-[13px] text-brand-700">{c.lrNumber}</span>
+                <Badge variant={c.status.toLowerCase() as any} />
+              </div>
+              <p className="text-[13px] font-medium text-brand-900 truncate">{c.consignor.name}</p>
+              <div className="flex items-center justify-between gap-2 mt-1">
+                <span className="text-[12px] text-brand-900/55">{c.fromCity} → {c.toCity}</span>
+                <span className="text-[13px] font-bold text-brand-900">{formatCurrency(c.freightAmount)}</span>
+              </div>
+              <div className="flex items-center gap-2 mt-1">
+                <span className="text-[11.5px] text-brand-900/40">{formatDate(c.bookingDate)}</span>
+                <Badge variant={
+                  c.paymentType === "PAID" ? "paid" :
+                  c.paymentType === "TO_PAY" ? "info" : "neutral"
+                } label={c.paymentType === "TBB" ? "TBB" : c.paymentType === "TO_PAY" ? "To Pay" : "Paid"} />
+              </div>
+            </div>
+            <ChevronRight size={16} className="text-brand-900/25 shrink-0 mt-0.5" />
+          </Link>
+        ))}
+      </div>
+
+      {/* Desktop table */}
+      <div className="hidden md:block overflow-x-auto">
         <table className="tms-table">
           <thead>
             <tr>
@@ -130,6 +159,7 @@ async function ConsignmentList({ q, status, page }: { q: string; status: string;
           </tbody>
         </table>
       </div>
+
       <Suspense>
         <Pagination page={page} total={total} pageSize={PAGE_SIZE} />
       </Suspense>

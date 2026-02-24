@@ -6,7 +6,7 @@ import Link from "next/link"
 import RevenueChart from "@/components/reports/RevenueChart"
 import StatusPieChart from "@/components/reports/StatusPieChart"
 import DateRangeFilter from "@/components/reports/DateRangeFilter"
-import { TrendingUp, Package, Building2, Truck, IndianRupee, FileText } from "lucide-react"
+import { TrendingUp, Package, Building2, Truck, IndianRupee, FileText, ChevronRight } from "lucide-react"
 
 export const dynamic = "force-dynamic"
 
@@ -143,7 +143,7 @@ export default async function ReportsPage({
       <DateRangeFilter from={fromStr} to={toStr} />
 
       {/* Summary KPIs */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         {[
           {
             label: "Total Revenue",
@@ -292,7 +292,32 @@ export default async function ReportsPage({
             <span className="text-[13px] font-bold text-brand-900">Overdue Bills</span>
             <span className="ml-auto text-[12px] font-semibold text-red-500">{overdueBills.length} overdue</span>
           </div>
-          <div className="overflow-x-auto">
+          {/* Mobile card list */}
+          <div className="md:hidden divide-y divide-brand-900/5">
+            {overdueBills.map((b) => {
+              const balance  = b.totalAmount - b.paidAmount
+              const daysOver = Math.floor((now.getTime() - (b.dueDate?.getTime() ?? 0)) / 86400000)
+              return (
+                <Link href={`/billing/${b.id}`} key={b.id}
+                      className="flex items-start justify-between gap-3 px-4 py-3.5 hover:bg-brand-900/3 active:bg-brand-900/5 transition-colors">
+                  <div className="min-w-0 flex-1">
+                    <div className="flex items-center justify-between gap-2 mb-0.5">
+                      <span className="font-mono font-semibold text-[13px] text-brand-700">{b.billNumber}</span>
+                      <span className="text-[12px] font-bold text-red-500">{daysOver}d overdue</span>
+                    </div>
+                    <p className="text-[13px] font-medium text-brand-900 truncate">{b.party.name}</p>
+                    <div className="flex items-center gap-2 mt-0.5">
+                      <span className="text-[12.5px] font-bold text-amber-600">{formatCurrency(balance)}</span>
+                      <span className="text-[11.5px] text-red-500">{b.dueDate ? formatDate(b.dueDate) : "—"}</span>
+                    </div>
+                  </div>
+                  <ChevronRight size={16} className="text-brand-900/25 shrink-0 mt-0.5" />
+                </Link>
+              )
+            })}
+          </div>
+          {/* Desktop table */}
+          <div className="hidden md:block overflow-x-auto">
             <table className="tms-table">
               <thead>
                 <tr>

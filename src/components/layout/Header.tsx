@@ -132,7 +132,7 @@ export default function Header({ onMenuClick }: { onMenuClick: () => void }) {
     <>
       {/* ── Header bar ── */}
       <header
-        className="sticky top-0 z-30 flex items-center gap-4 px-8 py-4"
+        className="sticky top-0 z-30 flex items-center gap-4 px-4 md:px-8 py-3 md:py-4"
         style={{
           background:         "transparent",
           backdropFilter:     "blur(22px) saturate(155%) brightness(1.04)",
@@ -144,7 +144,7 @@ export default function Header({ onMenuClick }: { onMenuClick: () => void }) {
         {/* Sidebar toggle */}
         <button
           onClick={onMenuClick}
-          className="p-2 rounded-lg hover:bg-brand-900/8 transition-colors"
+          className="p-2.5 rounded-lg min-w-[44px] min-h-[44px] flex items-center justify-center hover:bg-brand-900/8 transition-colors"
           title="Toggle sidebar"
         >
           <Menu size={20} className="text-brand-900" />
@@ -171,7 +171,7 @@ export default function Header({ onMenuClick }: { onMenuClick: () => void }) {
           <div ref={notifRef} className="relative">
             <button
               onClick={openNotifications}
-              className="relative p-2 rounded-xl hover:bg-brand-900/6 transition-colors"
+              className="relative p-2.5 min-w-[44px] min-h-[44px] flex items-center justify-center rounded-xl hover:bg-brand-900/6 transition-colors"
               title="Notifications"
             >
               <Bell size={18} strokeWidth={1.8} className="text-brand-900/60" />
@@ -184,7 +184,7 @@ export default function Header({ onMenuClick }: { onMenuClick: () => void }) {
 
             {notifOpen && (
               <div
-                className="absolute right-0 top-full mt-2 w-80 rounded-2xl z-50 overflow-hidden"
+                className="absolute right-0 top-full mt-2 w-[min(320px,calc(100vw-2rem))] rounded-2xl z-50 overflow-hidden"
                 style={{
                   background:    "rgba(255,255,255,0.92)",
                   backdropFilter:"blur(48px) saturate(160%)",
@@ -282,7 +282,7 @@ export default function Header({ onMenuClick }: { onMenuClick: () => void }) {
 
             {userOpen && (
               <div
-                className="absolute right-0 top-full mt-2 w-60 rounded-2xl z-50 overflow-hidden"
+                className="absolute right-0 top-full mt-2 w-[min(240px,calc(100vw-2rem))] rounded-2xl z-50 overflow-hidden"
                 style={{
                   background:    "rgba(255,255,255,0.92)",
                   backdropFilter:"blur(48px) saturate(160%)",

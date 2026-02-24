@@ -72,7 +72,7 @@ export default async function ConsignmentDetailPage({
         backHref="/consignments"
         backLabel="Back to Consignments"
         actions={
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 flex-wrap">
             <Badge variant={c.status.toLowerCase() as any} className="px-3 py-1 text-[13px]" />
             {c.status === "DELIVERED" && (
               <Link href={`/billing/new?consignmentId=${c.id}`} className="btn-primary text-[13px]"
@@ -89,7 +89,7 @@ export default async function ConsignmentDetailPage({
       />
 
       {/* Route banner */}
-      <div className="glass rounded-2xl px-6 py-5">
+      <div className="glass rounded-2xl px-4 py-4">
         <div className="flex items-center gap-4 flex-wrap">
           <div className="text-center">
             <p className="text-[11px] font-bold uppercase tracking-widest text-brand-900/40 mb-1">From</p>
@@ -190,7 +190,8 @@ export default async function ConsignmentDetailPage({
       {/* Status Timeline */}
       <GlassCard>
         <SectionH icon={Clock} title="Status Timeline" />
-        <div className="mt-5 flex items-start gap-0">
+        <div className="overflow-x-auto -mx-4 px-4 md:mx-0 md:px-0">
+        <div className="mt-5 flex items-start gap-0 min-w-[340px]">
           {STATUS_FLOW.map((step, i) => {
             const reached  = isReached(c.status, step)
             const isCurrent = c.status === step ||
@@ -231,6 +232,7 @@ export default async function ConsignmentDetailPage({
               </div>
             )
           })}
+        </div>
         </div>
 
         {c.status === "CANCELLED" && (

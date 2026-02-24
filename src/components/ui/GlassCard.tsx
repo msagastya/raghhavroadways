@@ -18,7 +18,7 @@ export default function GlassCard({
       className={cn(
         strong ? "glass-strong" : "glass",
         "rounded-2xl",
-        padding && "p-8",
+        padding && "p-4 md:p-6 lg:p-8",
         className
       )}
     >

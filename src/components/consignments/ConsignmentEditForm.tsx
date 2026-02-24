@@ -170,7 +170,7 @@ export default function ConsignmentEditForm({ consignment, companies, allParties
     <form onSubmit={handleSubmit} className="space-y-6">
 
       {/* Booking Details */}
-      <div className="glass rounded-2xl p-6">
+      <div className="glass rounded-2xl p-4 md:p-6">
         <S>Booking Details</S>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <F label="Booking Date" required>
@@ -188,7 +188,7 @@ export default function ConsignmentEditForm({ consignment, companies, allParties
       </div>
 
       {/* Parties */}
-      <div className="glass rounded-2xl p-6">
+      <div className="glass rounded-2xl p-4 md:p-6">
         <S>Parties</S>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <F label="Consignor (Sender)" required>
@@ -216,7 +216,7 @@ export default function ConsignmentEditForm({ consignment, companies, allParties
       </div>
 
       {/* Route */}
-      <div className="glass rounded-2xl p-6">
+      <div className="glass rounded-2xl p-4 md:p-6">
         <S>Route</S>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div className="space-y-3">
@@ -259,7 +259,7 @@ export default function ConsignmentEditForm({ consignment, companies, allParties
       </div>
 
       {/* Cargo */}
-      <div className="glass rounded-2xl p-6">
+      <div className="glass rounded-2xl p-4 md:p-6">
         <S>Cargo Details</S>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="md:col-span-2">
@@ -329,7 +329,7 @@ export default function ConsignmentEditForm({ consignment, companies, allParties
       </div>
 
       {/* Freight & Payment */}
-      <div className="glass rounded-2xl p-6">
+      <div className="glass rounded-2xl p-4 md:p-6">
         <S>Freight & Payment</S>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <F label="Freight Amount (₹)" required>
@@ -359,7 +359,7 @@ export default function ConsignmentEditForm({ consignment, companies, allParties
       </div>
 
       {/* Documents */}
-      <div className="glass rounded-2xl p-6">
+      <div className="glass rounded-2xl p-4 md:p-6">
         <S>Documents</S>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
           <DocumentUpload
@@ -380,7 +380,7 @@ export default function ConsignmentEditForm({ consignment, companies, allParties
       </div>
 
       {/* Vehicle */}
-      <div className="glass rounded-2xl p-6">
+      <div className="glass rounded-2xl p-4 md:p-6">
         <S>Vehicle Assignment</S>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <F label="Vehicle">
@@ -407,7 +407,7 @@ export default function ConsignmentEditForm({ consignment, companies, allParties
       </div>
 
       {/* Vehicle Payment */}
-      <div className="glass rounded-2xl p-6">
+      <div className="glass rounded-2xl p-4 md:p-6">
         <S>Vehicle Owner Payment</S>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <F label="Vehicle Freight (₹)">
@@ -433,7 +433,7 @@ export default function ConsignmentEditForm({ consignment, companies, allParties
       </div>
 
       {/* Notes */}
-      <div className="glass rounded-2xl p-6">
+      <div className="glass rounded-2xl p-4 md:p-6">
         <S>Notes</S>
         <textarea className="input-field resize-none" rows={3}
                   value={form.notes} onChange={(e) => set("notes", e.target.value)} />

@@ -8,7 +8,7 @@ import EmptyState from "@/components/ui/EmptyState"
 import { formatCurrency, formatDate } from "@/lib/utils"
 import {
   Phone, Mail, MapPin, Building2, CreditCard, FileText,
-  PackageSearch, Receipt, ArrowRight, Pencil, IndianRupee,
+  PackageSearch, Receipt, ArrowRight, Pencil, IndianRupee, ChevronRight,
 } from "lucide-react"
 import ToggleActiveButton from "@/components/parties/ToggleActiveButton"
 
@@ -154,46 +154,72 @@ export default async function CompanyDetailPage({
           <EmptyState icon={PackageSearch} title="No consignments yet"
                       subtitle="Consignments booked for this company will appear here." />
         ) : (
-          <div className="overflow-x-auto">
-            <table className="tms-table">
-              <thead>
-                <tr>
-                  <th>GR No.</th>
-                  <th>Route</th>
-                  <th>Amount</th>
-                  <th>Payment</th>
-                  <th>Status</th>
-                  <th>Date</th>
-                </tr>
-              </thead>
-              <tbody>
-                {company.consignmentsOrigin.map((c) => (
-                  <tr key={c.id}>
-                    <td>
-                      <Link href={`/consignments/${c.id}`}
-                            className="font-semibold text-brand-700 hover:underline">
-                        {c.lrNumber}
-                      </Link>
-                    </td>
-                    <td>
-                      <span>{c.fromCity}</span>
-                      <span className="text-brand-900/35 mx-1">→</span>
-                      <span>{c.toCity}</span>
-                    </td>
-                    <td className="font-semibold">{formatCurrency(c.freightAmount)}</td>
-                    <td>
+          <>
+            {/* Mobile card list */}
+            <div className="md:hidden divide-y divide-brand-900/5">
+              {company.consignmentsOrigin.map((c) => (
+                <Link href={`/consignments/${c.id}`} key={c.id}
+                      className="flex items-start justify-between gap-3 px-4 py-3.5 hover:bg-brand-900/3 active:bg-brand-900/5 transition-colors">
+                  <div className="min-w-0 flex-1">
+                    <div className="flex items-center justify-between gap-2 mb-1">
+                      <span className="font-semibold font-mono text-[13px] text-brand-700">{c.lrNumber}</span>
+                      <Badge variant={c.status.toLowerCase() as any} />
+                    </div>
+                    <p className="text-[12px] text-brand-900/55">{c.fromCity} → {c.toCity}</p>
+                    <div className="flex items-center justify-between gap-2 mt-1">
+                      <span className="text-[13px] font-bold text-brand-900">{formatCurrency(c.freightAmount)}</span>
                       <Badge variant={
                         c.paymentType === "PAID" ? "paid" :
                         c.paymentType === "TO_PAY" ? "info" : "neutral"
                       } label={c.paymentType === "TBB" ? "TBB" : c.paymentType === "TO_PAY" ? "To Pay" : "Paid"} />
-                    </td>
-                    <td><Badge variant={c.status.toLowerCase() as any} /></td>
-                    <td className="text-brand-900/50">{formatDate(c.bookingDate)}</td>
+                    </div>
+                  </div>
+                  <ChevronRight size={16} className="text-brand-900/25 shrink-0 mt-0.5" />
+                </Link>
+              ))}
+            </div>
+            {/* Desktop table */}
+            <div className="hidden md:block overflow-x-auto">
+              <table className="tms-table">
+                <thead>
+                  <tr>
+                    <th>GR No.</th>
+                    <th>Route</th>
+                    <th>Amount</th>
+                    <th>Payment</th>
+                    <th>Status</th>
+                    <th>Date</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+                </thead>
+                <tbody>
+                  {company.consignmentsOrigin.map((c) => (
+                    <tr key={c.id}>
+                      <td>
+                        <Link href={`/consignments/${c.id}`}
+                              className="font-semibold text-brand-700 hover:underline">
+                          {c.lrNumber}
+                        </Link>
+                      </td>
+                      <td>
+                        <span>{c.fromCity}</span>
+                        <span className="text-brand-900/35 mx-1">→</span>
+                        <span>{c.toCity}</span>
+                      </td>
+                      <td className="font-semibold">{formatCurrency(c.freightAmount)}</td>
+                      <td>
+                        <Badge variant={
+                          c.paymentType === "PAID" ? "paid" :
+                          c.paymentType === "TO_PAY" ? "info" : "neutral"
+                        } label={c.paymentType === "TBB" ? "TBB" : c.paymentType === "TO_PAY" ? "To Pay" : "Paid"} />
+                      </td>
+                      <td><Badge variant={c.status.toLowerCase() as any} /></td>
+                      <td className="text-brand-900/50">{formatDate(c.bookingDate)}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </>
         )}
       </GlassCard>
 
@@ -206,30 +232,52 @@ export default async function CompanyDetailPage({
           <EmptyState icon={Receipt} title="No payments recorded"
                       subtitle="Payments received from this company will appear here." />
         ) : (
-          <div className="overflow-x-auto">
-            <table className="tms-table">
-              <thead>
-                <tr>
-                  <th>Date</th>
-                  <th>Amount</th>
-                  <th>Mode</th>
-                  <th>Reference</th>
-                  <th>TDS</th>
-                </tr>
-              </thead>
-              <tbody>
-                {company.paymentsIn.map((p) => (
-                  <tr key={p.id}>
-                    <td>{formatDate(p.date)}</td>
-                    <td className="font-semibold text-green-700">{formatCurrency(p.amount)}</td>
-                    <td><span className="font-medium">{p.mode}</span></td>
-                    <td className="text-brand-900/55 font-mono text-[12.5px]">{p.reference ?? "—"}</td>
-                    <td>{p.tdsAmount > 0 ? formatCurrency(p.tdsAmount) : "—"}</td>
+          <>
+            {/* Mobile card list */}
+            <div className="md:hidden divide-y divide-brand-900/5">
+              {company.paymentsIn.map((p) => (
+                <div key={p.id} className="flex items-start justify-between gap-3 px-4 py-3.5">
+                  <div className="min-w-0 flex-1">
+                    <div className="flex items-center justify-between gap-2 mb-0.5">
+                      <span className="text-[12px] text-brand-900/50">{formatDate(p.date)}</span>
+                      <span className="text-[14px] font-bold text-green-700">{formatCurrency(p.amount)}</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <span className="text-[12px] font-medium text-brand-900/70">{p.mode}</span>
+                      {p.reference && (
+                        <span className="font-mono text-[11.5px] text-brand-900/45">{p.reference}</span>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+            {/* Desktop table */}
+            <div className="hidden md:block overflow-x-auto">
+              <table className="tms-table">
+                <thead>
+                  <tr>
+                    <th>Date</th>
+                    <th>Amount</th>
+                    <th>Mode</th>
+                    <th>Reference</th>
+                    <th>TDS</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+                </thead>
+                <tbody>
+                  {company.paymentsIn.map((p) => (
+                    <tr key={p.id}>
+                      <td>{formatDate(p.date)}</td>
+                      <td className="font-semibold text-green-700">{formatCurrency(p.amount)}</td>
+                      <td><span className="font-medium">{p.mode}</span></td>
+                      <td className="text-brand-900/55 font-mono text-[12.5px]">{p.reference ?? "—"}</td>
+                      <td>{p.tdsAmount > 0 ? formatCurrency(p.tdsAmount) : "—"}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </>
         )}
       </GlassCard>
     </div>

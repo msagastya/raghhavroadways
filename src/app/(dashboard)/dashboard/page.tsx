@@ -111,7 +111,7 @@ export default async function DashboardPage() {
   return (
     <div className="space-y-6">
       {/* Stats row */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <StatCard
           title="Active Trips"
           value={String(activeTrips)}
@@ -306,7 +306,7 @@ export default async function DashboardPage() {
       </div>
 
       {/* Bottom stats row */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         {[
           { label: "Booked Today",       value: todayBooked,    color: "text-brand-900" },
           { label: "Active Trips",        value: activeTrips,    color: "text-amber-600" },
@@ -314,7 +314,7 @@ export default async function DashboardPage() {
           { label: "Pending Bills",       value: pendingBills,   color: pendingBills > 0 ? "text-violet-600" : "text-green-600" },
         ].map(({ label, value, color }) => (
           <div key={label} className="glass rounded-2xl p-4 text-center">
-            <p className={`text-[28px] font-bold ${color}`}>{value}</p>
+            <p className={`text-[22px] md:text-[28px] font-bold ${color}`}>{value}</p>
             <p className="text-[11.5px] font-semibold text-brand-900/45 uppercase tracking-wide mt-1">{label}</p>
           </div>
         ))}

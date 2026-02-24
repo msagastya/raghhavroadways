@@ -42,7 +42,7 @@ export default function Pagination({ page, total, pageSize }: Props) {
 
   return (
     <div className="flex items-center justify-between px-4 py-3 border-t border-brand-900/5">
-      <p className="text-[12px] text-brand-900/40 font-medium">
+      <p className="text-[12px] text-brand-900/40 font-medium hidden sm:block">
         Showing {from}–{to} of {total.toLocaleString()}
       </p>
       <div className="flex items-center gap-1">
@@ -61,7 +61,7 @@ export default function Pagination({ page, total, pageSize }: Props) {
             <button
               key={p}
               onClick={() => goTo(p as number)}
-              className={`w-8 h-7 rounded-lg text-[12px] font-semibold transition-colors ${
+              className={`w-9 h-9 md:w-8 md:h-7 rounded-lg text-[12px] font-semibold transition-colors ${
                 p === page
                   ? "bg-brand-900 text-white"
                   : "text-brand-900/60 hover:bg-brand-900/6"

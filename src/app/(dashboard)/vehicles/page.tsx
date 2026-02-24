@@ -7,7 +7,7 @@ import Badge from "@/components/ui/Badge"
 import EmptyState from "@/components/ui/EmptyState"
 import SearchBar from "@/components/ui/SearchBar"
 import Pagination from "@/components/ui/Pagination"
-import { Truck, Plus, Eye, AlertTriangle, FileWarning } from "lucide-react"
+import { Truck, Plus, Eye, AlertTriangle, FileWarning, ChevronRight } from "lucide-react"
 
 const PAGE_SIZE = 20
 
@@ -57,72 +57,120 @@ async function VehiclesList({ q, page }: { q: string; page: number }) {
   }
 
   return (
-    <div className="overflow-x-auto">
-      <table className="tms-table">
-        <thead>
-          <tr><th>Vehicle No.</th><th>Type</th><th>Owner</th><th>Capacity</th><th>Trips</th><th>Docs</th><th>Status</th><th className="text-right">Actions</th></tr>
-        </thead>
-        <tbody>
-          {vehicles.map((v) => {
-            const expiringDocs = v.documents.filter((d) => {
-              if (!d.expiryDate) return false
-              const days = daysUntil(d.expiryDate)
-              return days >= 0 && days <= 30
-            })
-            const expiredDocs = v.documents.filter((d) => d.expiryDate && daysUntil(d.expiryDate) < 0)
+    <div>
+      {/* Mobile card list */}
+      <div className="md:hidden divide-y divide-brand-900/5">
+        {vehicles.map((v) => {
+          const expiringDocs = v.documents.filter((d) => {
+            if (!d.expiryDate) return false
+            const days = daysUntil(d.expiryDate)
+            return days >= 0 && days <= 30
+          })
+          const expiredDocs = v.documents.filter((d) => d.expiryDate && daysUntil(d.expiryDate) < 0)
 
-            return (
-              <tr key={v.id}>
-                <td>
-                  <Link href={`/vehicles/${v.id}`}
-                        className="font-semibold font-mono text-brand-700 hover:underline">
-                    {v.vehicleNumber}
-                  </Link>
-                </td>
-                <td>{VEHICLE_TYPE_LABELS[v.type] ?? v.type}</td>
-                <td>
-                  <Link href={`/parties/vehicle-owners/${v.owner.id}`}
-                        className="text-brand-700 hover:underline text-[13px]">
-                    {v.owner.name}
-                  </Link>
-                </td>
-                <td>{v.capacity ? `${v.capacity} T` : "—"}</td>
-                <td><span className="font-semibold text-brand-700">{v._count.consignments}</span></td>
-                <td>
-                  <div className="flex items-center gap-1.5">
+          return (
+            <Link href={`/vehicles/${v.id}`} key={v.id}
+                  className="flex items-start justify-between gap-3 px-4 py-3.5 hover:bg-brand-900/3 active:bg-brand-900/5 transition-colors">
+              <div className="min-w-0 flex-1">
+                <div className="flex items-center justify-between gap-2 mb-1">
+                  <span className="font-bold font-mono text-[13.5px] text-brand-700">{v.vehicleNumber}</span>
+                  <Badge variant={v.status.toLowerCase() as any} />
+                </div>
+                <p className="text-[12px] text-brand-900/60">
+                  {VEHICLE_TYPE_LABELS[v.type] ?? v.type}
+                  {v.capacity ? ` · ${v.capacity} T` : ""}
+                </p>
+                <p className="text-[12.5px] font-medium text-brand-900/70 mt-0.5">{v.owner.name}</p>
+                {(expiredDocs.length > 0 || expiringDocs.length > 0) && (
+                  <div className="flex items-center gap-1.5 mt-1.5">
                     {expiredDocs.length > 0 && (
-                      <span className="flex items-center gap-1 text-[11.5px] font-semibold text-red-500 bg-red-50 px-2 py-0.5 rounded-full border border-red-100">
-                        <AlertTriangle size={11} /> {expiredDocs.length} expired
+                      <span className="flex items-center gap-1 text-[11px] font-semibold text-red-500 bg-red-50 px-2 py-0.5 rounded-full">
+                        <AlertTriangle size={10} /> {expiredDocs.length} expired
                       </span>
                     )}
                     {expiringDocs.length > 0 && (
-                      <span className="flex items-center gap-1 text-[11.5px] font-semibold text-amber-600 bg-amber-50 px-2 py-0.5 rounded-full border border-amber-100">
-                        <FileWarning size={11} /> {expiringDocs.length} expiring
-                      </span>
-                    )}
-                    {expiredDocs.length === 0 && expiringDocs.length === 0 && (
-                      <span className="text-brand-900/30 text-[12px]">
-                        {v.documents.length > 0 ? "OK" : "—"}
+                      <span className="flex items-center gap-1 text-[11px] font-semibold text-amber-600 bg-amber-50 px-2 py-0.5 rounded-full">
+                        <FileWarning size={10} /> {expiringDocs.length} expiring
                       </span>
                     )}
                   </div>
-                </td>
-                <td>
-                  <Badge variant={v.status.toLowerCase() as any} />
-                </td>
-                <td>
-                  <div className="flex justify-end">
+                )}
+              </div>
+              <ChevronRight size={16} className="text-brand-900/25 shrink-0 mt-0.5" />
+            </Link>
+          )
+        })}
+      </div>
+
+      {/* Desktop table */}
+      <div className="hidden md:block overflow-x-auto">
+        <table className="tms-table">
+          <thead>
+            <tr><th>Vehicle No.</th><th>Type</th><th>Owner</th><th>Capacity</th><th>Trips</th><th>Docs</th><th>Status</th><th className="text-right">Actions</th></tr>
+          </thead>
+          <tbody>
+            {vehicles.map((v) => {
+              const expiringDocs = v.documents.filter((d) => {
+                if (!d.expiryDate) return false
+                const days = daysUntil(d.expiryDate)
+                return days >= 0 && days <= 30
+              })
+              const expiredDocs = v.documents.filter((d) => d.expiryDate && daysUntil(d.expiryDate) < 0)
+
+              return (
+                <tr key={v.id}>
+                  <td>
                     <Link href={`/vehicles/${v.id}`}
-                          className="flex items-center gap-1.5 text-[12px] font-medium text-brand-700 hover:text-brand-900 px-2.5 py-1.5 rounded-lg hover:bg-brand-900/5">
-                      <Eye size={13} /> View
+                          className="font-semibold font-mono text-brand-700 hover:underline">
+                      {v.vehicleNumber}
                     </Link>
-                  </div>
-                </td>
-              </tr>
-            )
-          })}
-        </tbody>
-      </table>
+                  </td>
+                  <td>{VEHICLE_TYPE_LABELS[v.type] ?? v.type}</td>
+                  <td>
+                    <Link href={`/parties/vehicle-owners/${v.owner.id}`}
+                          className="text-brand-700 hover:underline text-[13px]">
+                      {v.owner.name}
+                    </Link>
+                  </td>
+                  <td>{v.capacity ? `${v.capacity} T` : "—"}</td>
+                  <td><span className="font-semibold text-brand-700">{v._count.consignments}</span></td>
+                  <td>
+                    <div className="flex items-center gap-1.5">
+                      {expiredDocs.length > 0 && (
+                        <span className="flex items-center gap-1 text-[11.5px] font-semibold text-red-500 bg-red-50 px-2 py-0.5 rounded-full border border-red-100">
+                          <AlertTriangle size={11} /> {expiredDocs.length} expired
+                        </span>
+                      )}
+                      {expiringDocs.length > 0 && (
+                        <span className="flex items-center gap-1 text-[11.5px] font-semibold text-amber-600 bg-amber-50 px-2 py-0.5 rounded-full border border-amber-100">
+                          <FileWarning size={11} /> {expiringDocs.length} expiring
+                        </span>
+                      )}
+                      {expiredDocs.length === 0 && expiringDocs.length === 0 && (
+                        <span className="text-brand-900/30 text-[12px]">
+                          {v.documents.length > 0 ? "OK" : "—"}
+                        </span>
+                      )}
+                    </div>
+                  </td>
+                  <td>
+                    <Badge variant={v.status.toLowerCase() as any} />
+                  </td>
+                  <td>
+                    <div className="flex justify-end">
+                      <Link href={`/vehicles/${v.id}`}
+                            className="flex items-center gap-1.5 text-[12px] font-medium text-brand-700 hover:text-brand-900 px-2.5 py-1.5 rounded-lg hover:bg-brand-900/5">
+                        <Eye size={13} /> View
+                      </Link>
+                    </div>
+                  </td>
+                </tr>
+              )
+            })}
+          </tbody>
+        </table>
+      </div>
+
       <Suspense>
         <Pagination page={page} total={total} pageSize={PAGE_SIZE} />
       </Suspense>

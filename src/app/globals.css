@@ -300,3 +300,20 @@ body > * { position: relative; z-index: 1; }
 
 /* ── Page enter ────────────────────────────────────────────────────────────── */
 .page-content { animation: fadeUp 0.38s ease-out both; }
+
+/* ── Mobile: increase sidebar nav touch targets ──────────────────────────── */
+@media (max-width: 767px) {
+  .sidebar-nav-item {
+    min-height: 48px;
+    padding-top: 14px;
+    padding-bottom: 14px;
+  }
+}
+
+/* ── Mobile: tighter table cell spacing ──────────────────────────────────── */
+@media (max-width: 767px) {
+  .tms-table tbody td,
+  .tms-table thead th {
+    padding: 10px 12px;
+  }
+}

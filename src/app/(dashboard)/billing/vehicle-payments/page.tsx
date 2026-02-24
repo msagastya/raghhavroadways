@@ -6,7 +6,7 @@ import GlassCard from "@/components/ui/GlassCard"
 import EmptyState from "@/components/ui/EmptyState"
 import SearchBar from "@/components/ui/SearchBar"
 import VehiclePaymentFormWrapper from "@/components/billing/VehiclePaymentFormWrapper"
-import { Truck, Plus } from "lucide-react"
+import { Truck, Plus, ChevronRight } from "lucide-react"
 import { formatCurrency, formatDate } from "@/lib/utils"
 
 async function VehiclePaymentList({ q }: { q: string }) {
@@ -37,60 +37,92 @@ async function VehiclePaymentList({ q }: { q: string }) {
   }
 
   return (
-    <div className="overflow-x-auto">
-      <table className="tms-table">
-        <thead>
-          <tr>
-            <th>Date</th>
-            <th>Vehicle Owner</th>
-            <th>GR / Trip</th>
-            <th>Type</th>
-            <th>Amount</th>
-            <th>Mode</th>
-            <th>Reference</th>
-          </tr>
-        </thead>
-        <tbody>
-          {payments.map((p) => (
-            <tr key={p.id}>
-              <td className="text-brand-900/50 text-[12.5px]">{formatDate(p.date)}</td>
-              <td>
-                <Link href={`/parties/vehicle-owners/${p.party.id}`}
-                      className="font-medium text-brand-700 hover:underline">
-                  {p.party.name}
-                </Link>
-              </td>
-              <td>
-                {p.consignment ? (
-                  <div>
-                    <Link href={`/consignments/${p.consignment.id}`}
-                          className="font-mono text-[12px] text-brand-700 hover:underline">
-                      {p.consignment.lrNumber}
-                    </Link>
-                    <p className="text-[11.5px] text-brand-900/40">
-                      {p.consignment.fromCity} → {p.consignment.toCity}
-                    </p>
-                  </div>
-                ) : (
-                  <span className="text-brand-900/35 text-[12px]">—</span>
-                )}
-              </td>
-              <td>
-                <span className={`text-[12px] font-semibold px-2 py-0.5 rounded-full ${
+    <div>
+      {/* Mobile card list */}
+      <div className="md:hidden divide-y divide-brand-900/5">
+        {payments.map((p) => (
+          <div key={p.id} className="flex items-start justify-between gap-3 px-4 py-3.5">
+            <div className="min-w-0 flex-1">
+              <div className="flex items-center justify-between gap-2 mb-1">
+                <span className="text-[12px] text-brand-900/50">{formatDate(p.date)}</span>
+                <span className="text-[14px] font-bold text-brand-900">{formatCurrency(p.amount)}</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <span className="font-mono text-[12.5px] font-semibold text-brand-700">
+                  {p.consignment ? p.consignment.lrNumber : "—"}
+                </span>
+                <span className="text-[12px] text-brand-900/55 truncate">{p.party.name}</span>
+              </div>
+              <div className="flex items-center gap-2 mt-1">
+                <span className={`text-[11.5px] font-semibold px-2 py-0.5 rounded-full ${
                   p.type === "ADVANCE" ? "text-amber-700 bg-amber-50" :
                   p.type === "BALANCE" ? "text-green-700 bg-green-50" :
                   "text-blue-700 bg-blue-50"
-                }`}>
-                  {p.type}
-                </span>
-              </td>
-              <td className="font-semibold text-brand-900">{formatCurrency(p.amount)}</td>
-              <td className="text-brand-900/60 text-[12.5px]">{p.mode}</td>
-              <td className="font-mono text-[12px] text-brand-900/50">{p.reference ?? "—"}</td>
+                }`}>{p.type}</span>
+                <span className="text-[11.5px] text-brand-900/45">{p.mode}</span>
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* Desktop table */}
+      <div className="hidden md:block overflow-x-auto">
+        <table className="tms-table">
+          <thead>
+            <tr>
+              <th>Date</th>
+              <th>Vehicle Owner</th>
+              <th>GR / Trip</th>
+              <th>Type</th>
+              <th>Amount</th>
+              <th>Mode</th>
+              <th>Reference</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {payments.map((p) => (
+              <tr key={p.id}>
+                <td className="text-brand-900/50 text-[12.5px]">{formatDate(p.date)}</td>
+                <td>
+                  <Link href={`/parties/vehicle-owners/${p.party.id}`}
+                        className="font-medium text-brand-700 hover:underline">
+                    {p.party.name}
+                  </Link>
+                </td>
+                <td>
+                  {p.consignment ? (
+                    <div>
+                      <Link href={`/consignments/${p.consignment.id}`}
+                            className="font-mono text-[12px] text-brand-700 hover:underline">
+                        {p.consignment.lrNumber}
+                      </Link>
+                      <p className="text-[11.5px] text-brand-900/40">
+                        {p.consignment.fromCity} → {p.consignment.toCity}
+                      </p>
+                    </div>
+                  ) : (
+                    <span className="text-brand-900/35 text-[12px]">—</span>
+                  )}
+                </td>
+                <td>
+                  <span className={`text-[12px] font-semibold px-2 py-0.5 rounded-full ${
+                    p.type === "ADVANCE" ? "text-amber-700 bg-amber-50" :
+                    p.type === "BALANCE" ? "text-green-700 bg-green-50" :
+                    "text-blue-700 bg-blue-50"
+                  }`}>
+                    {p.type}
+                  </span>
+                </td>
+                <td className="font-semibold text-brand-900">{formatCurrency(p.amount)}</td>
+                <td className="text-brand-900/60 text-[12.5px]">{p.mode}</td>
+                <td className="font-mono text-[12px] text-brand-900/50">{p.reference ?? "—"}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+
       <p className="text-[12px] text-brand-900/35 px-4 py-3 text-right">
         {payments.length} payment{payments.length !== 1 ? "s" : ""}
       </p>
@@ -138,7 +170,7 @@ export default async function VehiclePaymentsPage({
       />
 
       {/* Summary */}
-      <div className="grid grid-cols-3 gap-4 mb-5">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-5">
         <div className="glass rounded-2xl p-4">
           <p className="text-[11px] font-bold uppercase tracking-widest text-brand-900/40">Advances Paid</p>
           <p className="text-[22px] font-bold text-amber-600 mt-1">{formatCurrency(total("ADVANCE"))}</p>

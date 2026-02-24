@@ -7,7 +7,7 @@ import Badge from "@/components/ui/Badge"
 import EmptyState from "@/components/ui/EmptyState"
 import SearchBar from "@/components/ui/SearchBar"
 import Pagination from "@/components/ui/Pagination"
-import { KeyRound, Plus, Eye, Phone, Truck } from "lucide-react"
+import { KeyRound, Plus, Eye, Phone, Truck, ChevronRight } from "lucide-react"
 
 const PAGE_SIZE = 30
 
@@ -50,72 +50,112 @@ async function VehicleOwnersList({ q, page }: { q: string; page: number }) {
   }
 
   return (
-    <div className="overflow-x-auto">
-      <table className="tms-table">
-        <thead>
-          <tr>
-            <th>Owner</th>
-            <th>Phone</th>
-            <th>Vehicles</th>
-            <th>Payments Made</th>
-            <th>Status</th>
-            <th className="text-right">Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          {owners.map((o) => (
-            <tr key={o.id}>
-              <td>
-                <div>
-                  <p className="font-semibold text-brand-900">{o.name}</p>
-                  {(o.city || o.state) && (
-                    <p className="text-[12px] text-brand-900/45 mt-0.5">
-                      {[o.city, o.state].filter(Boolean).join(", ")}
-                    </p>
-                  )}
-                </div>
-              </td>
-              <td>
-                <div className="flex items-center gap-1.5">
-                  <Phone size={12} className="text-brand-900/35" />
-                  {o.phone ?? "—"}
-                </div>
-              </td>
-              <td>
-                {o.vehicles.length > 0 ? (
-                  <div className="flex items-center gap-1.5">
-                    <Truck size={13} className="text-brand-700" />
-                    <span className="font-semibold text-brand-700">{o.vehicles.length}</span>
-                    <span className="text-brand-900/40 text-[12px]">vehicle{o.vehicles.length > 1 ? "s" : ""}</span>
-                  </div>
-                ) : (
-                  <span className="text-brand-900/35">None added</span>
+    <div>
+      {/* Mobile card list */}
+      <div className="md:hidden divide-y divide-brand-900/5">
+        {owners.map((o) => (
+          <Link href={`/parties/vehicle-owners/${o.id}`} key={o.id}
+                className="flex items-start justify-between gap-3 px-4 py-3.5 hover:bg-brand-900/3 active:bg-brand-900/5 transition-colors">
+            <div className="min-w-0 flex-1">
+              <div className="flex items-center justify-between gap-2 mb-1">
+                <span className="font-bold text-[14px] text-brand-900 truncate">{o.name}</span>
+                <Badge variant={o.isActive ? "success" : "inactive"} label={o.isActive ? "Active" : "Inactive"} />
+              </div>
+              <div className="flex items-center gap-3">
+                {o.phone && (
+                  <span className="flex items-center gap-1 text-[12px] text-brand-900/55">
+                    <Phone size={11} className="text-brand-900/35" />{o.phone}
+                  </span>
                 )}
-              </td>
-              <td>
-                <span className="font-semibold text-brand-700">
-                  {o._count.vehiclePayments}
-                </span>
-              </td>
-              <td>
-                <Badge variant={o.isActive ? "success" : "inactive"}
-                       label={o.isActive ? "Active" : "Inactive"} />
-              </td>
-              <td>
-                <div className="flex justify-end">
-                  <Link
-                    href={`/parties/vehicle-owners/${o.id}`}
-                    className="flex items-center gap-1.5 text-[12px] font-medium text-brand-700 hover:text-brand-900 transition-colors px-2.5 py-1.5 rounded-lg hover:bg-brand-900/5"
-                  >
-                    <Eye size={13} strokeWidth={2} />
-                    View
-                  </Link>
+                {(o.city || o.state) && (
+                  <span className="text-[12px] text-brand-900/45">
+                    {[o.city, o.state].filter(Boolean).join(", ")}
+                  </span>
+                )}
+              </div>
+              {o.vehicles.length > 0 && (
+                <div className="flex items-center gap-1 mt-1">
+                  <Truck size={11} className="text-brand-700" />
+                  <span className="text-[11.5px] font-semibold text-brand-700">
+                    {o.vehicles.length} vehicle{o.vehicles.length > 1 ? "s" : ""}
+                  </span>
                 </div>
-              </td>
+              )}
+            </div>
+            <ChevronRight size={16} className="text-brand-900/25 shrink-0 mt-0.5" />
+          </Link>
+        ))}
+      </div>
+
+      {/* Desktop table */}
+      <div className="hidden md:block overflow-x-auto">
+        <table className="tms-table">
+          <thead>
+            <tr>
+              <th>Owner</th>
+              <th>Phone</th>
+              <th>Vehicles</th>
+              <th>Payments Made</th>
+              <th>Status</th>
+              <th className="text-right">Actions</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {owners.map((o) => (
+              <tr key={o.id}>
+                <td>
+                  <div>
+                    <p className="font-semibold text-brand-900">{o.name}</p>
+                    {(o.city || o.state) && (
+                      <p className="text-[12px] text-brand-900/45 mt-0.5">
+                        {[o.city, o.state].filter(Boolean).join(", ")}
+                      </p>
+                    )}
+                  </div>
+                </td>
+                <td>
+                  <div className="flex items-center gap-1.5">
+                    <Phone size={12} className="text-brand-900/35" />
+                    {o.phone ?? "—"}
+                  </div>
+                </td>
+                <td>
+                  {o.vehicles.length > 0 ? (
+                    <div className="flex items-center gap-1.5">
+                      <Truck size={13} className="text-brand-700" />
+                      <span className="font-semibold text-brand-700">{o.vehicles.length}</span>
+                      <span className="text-brand-900/40 text-[12px]">vehicle{o.vehicles.length > 1 ? "s" : ""}</span>
+                    </div>
+                  ) : (
+                    <span className="text-brand-900/35">None added</span>
+                  )}
+                </td>
+                <td>
+                  <span className="font-semibold text-brand-700">
+                    {o._count.vehiclePayments}
+                  </span>
+                </td>
+                <td>
+                  <Badge variant={o.isActive ? "success" : "inactive"}
+                         label={o.isActive ? "Active" : "Inactive"} />
+                </td>
+                <td>
+                  <div className="flex justify-end">
+                    <Link
+                      href={`/parties/vehicle-owners/${o.id}`}
+                      className="flex items-center gap-1.5 text-[12px] font-medium text-brand-700 hover:text-brand-900 transition-colors px-2.5 py-1.5 rounded-lg hover:bg-brand-900/5"
+                    >
+                      <Eye size={13} strokeWidth={2} />
+                      View
+                    </Link>
+                  </div>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+
       <Suspense>
         <Pagination page={page} total={total} pageSize={PAGE_SIZE} />
       </Suspense>

@@ -139,7 +139,7 @@ export default function ConsignmentForm({ companies, allParties, agents, vehicle
     <form onSubmit={handleSubmit} className="space-y-6">
 
       {/* Booking Details */}
-      <div className="glass rounded-2xl p-6">
+      <div className="glass rounded-2xl p-4 md:p-6">
         <S>Booking Details</S>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <F label="Booking Date" required>
@@ -157,7 +157,7 @@ export default function ConsignmentForm({ companies, allParties, agents, vehicle
       </div>
 
       {/* Parties */}
-      <div className="glass rounded-2xl p-6">
+      <div className="glass rounded-2xl p-4 md:p-6">
         <S>Parties</S>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <F label="Consignor (Sender)" required>
@@ -185,7 +185,7 @@ export default function ConsignmentForm({ companies, allParties, agents, vehicle
       </div>
 
       {/* Route */}
-      <div className="glass rounded-2xl p-6">
+      <div className="glass rounded-2xl p-4 md:p-6">
         <S>Route</S>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div className="space-y-3">
@@ -228,7 +228,7 @@ export default function ConsignmentForm({ companies, allParties, agents, vehicle
       </div>
 
       {/* Cargo */}
-      <div className="glass rounded-2xl p-6">
+      <div className="glass rounded-2xl p-4 md:p-6">
         <S>Cargo Details</S>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="md:col-span-2">
@@ -298,7 +298,7 @@ export default function ConsignmentForm({ companies, allParties, agents, vehicle
       </div>
 
       {/* Freight & Payment */}
-      <div className="glass rounded-2xl p-6">
+      <div className="glass rounded-2xl p-4 md:p-6">
         <S>Freight & Payment</S>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <F label="Freight Amount (₹)" required>
@@ -328,7 +328,7 @@ export default function ConsignmentForm({ companies, allParties, agents, vehicle
       </div>
 
       {/* Documents */}
-      <div className="glass rounded-2xl p-6">
+      <div className="glass rounded-2xl p-4 md:p-6">
         <S>Documents</S>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
           <DocumentUpload
@@ -349,7 +349,7 @@ export default function ConsignmentForm({ companies, allParties, agents, vehicle
       </div>
 
       {/* Vehicle Assignment */}
-      <div className="glass rounded-2xl p-6">
+      <div className="glass rounded-2xl p-4 md:p-6">
         <S>Vehicle Assignment (Optional)</S>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <F label="Vehicle">
@@ -376,7 +376,7 @@ export default function ConsignmentForm({ companies, allParties, agents, vehicle
       </div>
 
       {/* Vehicle Payment */}
-      <div className="glass rounded-2xl p-6">
+      <div className="glass rounded-2xl p-4 md:p-6">
         <S>Vehicle Owner Payment</S>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <F label="Vehicle Freight (₹)">
@@ -402,7 +402,7 @@ export default function ConsignmentForm({ companies, allParties, agents, vehicle
       </div>
 
       {/* Notes */}
-      <div className="glass rounded-2xl p-6">
+      <div className="glass rounded-2xl p-4 md:p-6">
         <S>Notes</S>
         <textarea className="input-field resize-none" rows={3} placeholder="Any special instructions or remarks..."
                   value={form.notes} onChange={(e) => set("notes", e.target.value)} />

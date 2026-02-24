@@ -1,6 +1,7 @@
 "use client"
 
-import { useState, useRef, useCallback } from "react"
+import { useState, useRef, useCallback, useEffect } from "react"
+import { usePathname } from "next/navigation"
 import Sidebar from "@/components/layout/Sidebar"
 import Header from "@/components/layout/Header"
 
@@ -13,6 +14,10 @@ export default function DashboardLayout({
 }) {
   const [open, setOpen] = useState(false)
   const hideTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const pathname = usePathname()
+
+  // Auto-close sidebar on navigation (mobile overlay mode)
+  useEffect(() => { setOpen(false) }, [pathname])
 
   const showSidebar = useCallback(() => {
     if (hideTimer.current) clearTimeout(hideTimer.current)
@@ -26,18 +31,25 @@ export default function DashboardLayout({
   return (
     <div className="flex h-screen overflow-hidden">
 
-      {/* Spacer — grows to push main content right when sidebar opens */}
+      {/* Spacer — pushes content right on desktop only; always 0 on mobile (overlay mode) */}
       <div
-        className="flex-shrink-0 transition-[width] duration-300 ease-in-out"
-        style={{ width: open ? `${SIDEBAR_W}px` : "0px" }}
+        className={`flex-shrink-0 transition-[width] duration-300 ease-in-out w-0${open ? " md:w-[280px]" : ""}`}
       />
 
-      {/* Hover trigger strip — left edge of viewport */}
+      {/* Hover trigger strip — desktop only */}
       <div
-        className="fixed left-0 top-0 h-full z-40"
+        className="fixed left-0 top-0 h-full z-40 hidden md:block"
         style={{ width: "14px" }}
         onMouseEnter={showSidebar}
       />
+
+      {/* Mobile backdrop overlay — tap to close */}
+      {open && (
+        <div
+          className="fixed inset-0 z-40 bg-black/50 md:hidden"
+          onClick={() => setOpen(false)}
+        />
+      )}
 
       {/* Sidebar panel — fixed, slides in from left */}
       <aside
@@ -55,7 +67,7 @@ export default function DashboardLayout({
       {/* Main content — fills remaining width, always full when sidebar closed */}
       <div className="flex-1 flex flex-col min-w-0 overflow-hidden" style={{ zIndex: 2 }}>
         <Header onMenuClick={() => setOpen((v) => !v)} />
-        <main className="flex-1 overflow-y-auto p-8 md:p-10">
+        <main className="flex-1 overflow-y-auto p-4 sm:p-6 md:p-8 lg:p-10">
           <div className="page-content max-w-[1400px] mx-auto">
             {children}
           </div>

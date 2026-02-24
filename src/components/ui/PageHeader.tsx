@@ -20,7 +20,7 @@ export default function PageHeader({
   className,
 }: PageHeaderProps) {
   return (
-    <div className={cn("flex items-start justify-between gap-4 mb-6", className)}>
+    <div className={cn("flex items-start justify-between gap-3 mb-4 md:mb-6 flex-wrap", className)}>
       <div className="flex items-start gap-3 min-w-0">
         {backHref && (
           <Link
@@ -32,7 +32,7 @@ export default function PageHeader({
           </Link>
         )}
         <div className="min-w-0">
-          <h1 className="text-[20px] font-bold text-brand-900 leading-tight truncate">
+          <h1 className="text-[17px] md:text-[20px] font-bold text-brand-900 leading-tight truncate">
             {title}
           </h1>
           {subtitle && (

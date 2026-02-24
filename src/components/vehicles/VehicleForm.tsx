@@ -96,7 +96,7 @@ export default function VehicleForm({ mode, owners, initialData }: Props) {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
-      <div className="glass rounded-2xl p-6">
+      <div className="glass rounded-2xl p-4 md:p-6">
         <SectionTitle>Vehicle Details</SectionTitle>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <Field label="Vehicle Number" required>
@@ -134,7 +134,7 @@ export default function VehicleForm({ mode, owners, initialData }: Props) {
         </div>
       </div>
 
-      <div className="glass rounded-2xl p-6">
+      <div className="glass rounded-2xl p-4 md:p-6">
         <SectionTitle>Vehicle Owner</SectionTitle>
         <Field label="Owner" required>
           <select className="input-field bg-white" value={form.ownerId}
@@ -155,7 +155,7 @@ export default function VehicleForm({ mode, owners, initialData }: Props) {
         )}
       </div>
 
-      <div className="glass rounded-2xl p-6">
+      <div className="glass rounded-2xl p-4 md:p-6">
         <SectionTitle>Notes</SectionTitle>
         <textarea className="input-field resize-none" rows={3} placeholder="Any notes about this vehicle..."
                   value={form.notes} onChange={(e) => set("notes", e.target.value)} />

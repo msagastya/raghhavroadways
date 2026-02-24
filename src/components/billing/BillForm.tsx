@@ -148,7 +148,7 @@ export default function BillForm({ companies, unbilledConsignments, preselectedC
     <form onSubmit={handleSubmit} className="space-y-6">
 
       {/* Consignment Link */}
-      <div className="glass rounded-2xl p-6">
+      <div className="glass rounded-2xl p-4 md:p-6">
         <S>Link Consignment</S>
         {pre ? (
           <div className="flex items-center gap-3 p-3 rounded-xl"
@@ -174,7 +174,7 @@ export default function BillForm({ companies, unbilledConsignments, preselectedC
       </div>
 
       {/* Bill Details */}
-      <div className="glass rounded-2xl p-6">
+      <div className="glass rounded-2xl p-4 md:p-6">
         <S>Bill Details</S>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <F label="Billing Party (Billed To)" required>
@@ -238,7 +238,7 @@ export default function BillForm({ companies, unbilledConsignments, preselectedC
       </div>
 
       {/* GST & Amount */}
-      <div className="glass rounded-2xl p-6">
+      <div className="glass rounded-2xl p-4 md:p-6">
         <S>Amount & GST</S>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <F label="Freight Amount (₹)" required>
@@ -304,7 +304,7 @@ export default function BillForm({ companies, unbilledConsignments, preselectedC
       </div>
 
       {/* Notes */}
-      <div className="glass rounded-2xl p-6">
+      <div className="glass rounded-2xl p-4 md:p-6">
         <S>Notes</S>
         <textarea className="input-field resize-none" rows={2} placeholder="Any notes for this bill..."
                   value={form.notes} onChange={(e) => set("notes", e.target.value)} />

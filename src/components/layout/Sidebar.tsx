@@ -23,6 +23,7 @@ import {
   LogOut,
   UserCircle,
   Landmark,
+  X,
 } from "lucide-react"
 
 interface NavItem {
@@ -146,7 +147,7 @@ export default function Sidebar({ onClose }: { onClose?: () => void }) {
   return (
     <div className="glass-dark flex flex-col h-full">
       {/* Logo */}
-      <div className="px-5 pt-6 pb-5 border-b border-white/10">
+      <div className="px-5 pt-6 pb-5 border-b border-white/10 relative">
         <div className="flex items-center gap-3.5">
           <div className="w-10 h-10 rounded-xl bg-white flex items-center justify-center shrink-0 overflow-hidden">
             {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -168,6 +169,15 @@ export default function Sidebar({ onClose }: { onClose?: () => void }) {
             </p>
           </div>
         </div>
+        {/* Mobile close button */}
+        {onClose && (
+          <button
+            onClick={onClose}
+            className="absolute top-4 right-4 p-2 rounded-xl text-white/50 hover:text-white hover:bg-white/12 transition-colors md:hidden"
+          >
+            <X size={18} strokeWidth={2} />
+          </button>
+        )}
       </div>
 
       {/* Navigation */}

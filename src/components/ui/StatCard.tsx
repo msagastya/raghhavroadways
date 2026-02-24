@@ -30,7 +30,7 @@ export default function StatCard({
 }: StatCardProps) {
   return (
     <div
-      className={cn("glass rounded-2xl p-8 animate-fade-up", className)}
+      className={cn("glass rounded-2xl p-4 md:p-8 animate-fade-up", className)}
       style={{
         animationDelay: `${delay}ms`,
         boxShadow: "0 24px 60px rgba(0,0,0,0.18), 0 8px 20px rgba(0,0,0,0.10), inset 0 1px 0 rgba(255,255,255,0.95), inset 0 -1px 0 rgba(0,0,0,0.05)",
@@ -41,16 +41,16 @@ export default function StatCard({
           <p className="text-[13px] font-bold uppercase tracking-widest text-brand-900/55 mb-3">
             {title}
           </p>
-          <p className="text-[38px] font-bold text-brand-900 leading-none mb-2 truncate">
+          <p className="text-[26px] md:text-[38px] font-bold text-brand-900 leading-none mb-2 truncate">
             {value}
           </p>
           {subtitle && (
-            <p className="text-[14px] text-brand-900/55 truncate">{subtitle}</p>
+            <p className="text-[12px] md:text-[14px] text-brand-900/55 truncate">{subtitle}</p>
           )}
           {trend && (
             <div
               className={cn(
-                "inline-flex items-center gap-1.5 mt-3 text-[13px] font-semibold px-3 py-1 rounded-full",
+                "inline-flex items-center gap-1.5 mt-2 md:mt-3 text-[13px] font-semibold px-3 py-1 rounded-full",
                 trend.positive
                   ? "bg-emerald-100/70 text-emerald-700"
                   : "bg-red-100/70 text-red-600"
@@ -71,7 +71,7 @@ export default function StatCard({
 
         <div
           className={cn(
-            "w-16 h-16 rounded-2xl flex items-center justify-center shrink-0",
+            "w-11 h-11 md:w-16 md:h-16 rounded-2xl flex items-center justify-center shrink-0",
             iconBg
           )}
           style={{

@@ -7,7 +7,7 @@ import Badge from "@/components/ui/Badge"
 import EmptyState from "@/components/ui/EmptyState"
 import SearchBar from "@/components/ui/SearchBar"
 import Pagination from "@/components/ui/Pagination"
-import { FileText, Plus, Eye } from "lucide-react"
+import { FileText, Plus, Eye, ChevronRight } from "lucide-react"
 import { formatCurrency, formatDate } from "@/lib/utils"
 import { BillStatus } from "@prisma/client"
 
@@ -63,7 +63,36 @@ async function BillList({ q, status, page }: { q: string; status: string; page: 
 
   return (
     <div>
-      <div className="overflow-x-auto">
+      {/* Mobile card list */}
+      <div className="md:hidden divide-y divide-brand-900/5">
+        {bills.map((b) => {
+          const paid    = b.paidAmount
+          const balance = +(b.totalAmount - paid).toFixed(2)
+          return (
+            <Link href={`/billing/${b.id}`} key={b.id}
+                  className="flex items-start justify-between gap-3 px-4 py-3.5 hover:bg-brand-900/3 active:bg-brand-900/5 transition-colors">
+              <div className="min-w-0 flex-1">
+                <div className="flex items-center justify-between gap-2 mb-1">
+                  <span className="font-semibold font-mono text-[13px] text-brand-700">{b.billNumber}</span>
+                  <Badge variant={b.status.toLowerCase() as any} />
+                </div>
+                <p className="text-[13px] font-medium text-brand-900 truncate">{b.party.name}</p>
+                <div className="flex items-center gap-3 mt-1">
+                  <span className="text-[13px] font-bold text-brand-900">{formatCurrency(b.totalAmount)}</span>
+                  {balance > 0 && (
+                    <span className="text-[12px] font-semibold text-red-500">bal {formatCurrency(balance)}</span>
+                  )}
+                </div>
+                <span className="text-[11.5px] text-brand-900/40 mt-0.5 block">{formatDate(b.billDate)}</span>
+              </div>
+              <ChevronRight size={16} className="text-brand-900/25 shrink-0 mt-0.5" />
+            </Link>
+          )
+        })}
+      </div>
+
+      {/* Desktop table */}
+      <div className="hidden md:block overflow-x-auto">
         <table className="tms-table">
         <thead>
           <tr>
@@ -124,6 +153,7 @@ async function BillList({ q, status, page }: { q: string; status: string; page: 
         </tbody>
         </table>
       </div>
+
       <Suspense>
         <Pagination page={page} total={total} pageSize={PAGE_SIZE} />
       </Suspense>
@@ -173,7 +203,7 @@ export default async function BillingPage({
       />
 
       {/* Summary bar */}
-      <div className="grid grid-cols-3 gap-4 mb-5">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-5">
         <div className="glass rounded-2xl p-4">
           <p className="text-[11px] font-bold uppercase tracking-widest text-brand-900/40">Outstanding</p>
           <p className="text-[22px] font-bold text-brand-900 mt-1">{formatCurrency(outstanding)}</p>

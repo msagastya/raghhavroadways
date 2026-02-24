@@ -8,7 +8,7 @@ import EmptyState from "@/components/ui/EmptyState"
 import { formatCurrency, formatDate } from "@/lib/utils"
 import {
   Phone, Mail, MapPin, Landmark, CreditCard, FileText,
-  Receipt, Pencil, IndianRupee,
+  Receipt, Pencil, IndianRupee, ChevronRight,
 } from "lucide-react"
 import ToggleActiveButton from "@/components/parties/ToggleActiveButton"
 
@@ -156,35 +156,57 @@ export default async function BillingPartyDetailPage({
           <EmptyState icon={Receipt} title="No invoices yet"
                       subtitle="Bills generated for this party will appear here." />
         ) : (
-          <div className="overflow-x-auto">
-            <table className="tms-table">
-              <thead>
-                <tr>
-                  <th>Bill No.</th>
-                  <th>Date</th>
-                  <th>Amount</th>
-                  <th>Paid</th>
-                  <th>Status</th>
-                </tr>
-              </thead>
-              <tbody>
-                {party.bills.map((b) => (
-                  <tr key={b.id}>
-                    <td>
-                      <Link href={`/billing/${b.id}`}
-                            className="font-semibold text-brand-700 hover:underline font-mono">
-                        {b.billNumber}
-                      </Link>
-                    </td>
-                    <td className="text-brand-900/50">{formatDate(b.billDate)}</td>
-                    <td className="font-semibold">{formatCurrency(b.totalAmount)}</td>
-                    <td className="text-green-700 font-semibold">{formatCurrency(b.paidAmount)}</td>
-                    <td><Badge variant={b.status.toLowerCase() as any} /></td>
+          <>
+            {/* Mobile card list */}
+            <div className="md:hidden divide-y divide-brand-900/5">
+              {party.bills.map((b) => (
+                <Link href={`/billing/${b.id}`} key={b.id}
+                      className="flex items-start justify-between gap-3 px-4 py-3.5 hover:bg-brand-900/3 active:bg-brand-900/5 transition-colors">
+                  <div className="min-w-0 flex-1">
+                    <div className="flex items-center justify-between gap-2 mb-1">
+                      <span className="font-semibold font-mono text-[13px] text-brand-700">{b.billNumber}</span>
+                      <Badge variant={b.status.toLowerCase() as any} />
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <span className="text-[13px] font-bold text-brand-900">{formatCurrency(b.totalAmount)}</span>
+                      <span className="text-[12px] text-brand-900/40">{formatDate(b.billDate)}</span>
+                    </div>
+                  </div>
+                  <ChevronRight size={16} className="text-brand-900/25 shrink-0 mt-0.5" />
+                </Link>
+              ))}
+            </div>
+            {/* Desktop table */}
+            <div className="hidden md:block overflow-x-auto">
+              <table className="tms-table">
+                <thead>
+                  <tr>
+                    <th>Bill No.</th>
+                    <th>Date</th>
+                    <th>Amount</th>
+                    <th>Paid</th>
+                    <th>Status</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+                </thead>
+                <tbody>
+                  {party.bills.map((b) => (
+                    <tr key={b.id}>
+                      <td>
+                        <Link href={`/billing/${b.id}`}
+                              className="font-semibold text-brand-700 hover:underline font-mono">
+                          {b.billNumber}
+                        </Link>
+                      </td>
+                      <td className="text-brand-900/50">{formatDate(b.billDate)}</td>
+                      <td className="font-semibold">{formatCurrency(b.totalAmount)}</td>
+                      <td className="text-green-700 font-semibold">{formatCurrency(b.paidAmount)}</td>
+                      <td><Badge variant={b.status.toLowerCase() as any} /></td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </>
         )}
       </GlassCard>
 
@@ -197,30 +219,52 @@ export default async function BillingPartyDetailPage({
           <EmptyState icon={Receipt} title="No payments recorded"
                       subtitle="Payments received from this party will appear here." />
         ) : (
-          <div className="overflow-x-auto">
-            <table className="tms-table">
-              <thead>
-                <tr>
-                  <th>Date</th>
-                  <th>Amount</th>
-                  <th>Mode</th>
-                  <th>Reference</th>
-                  <th>TDS</th>
-                </tr>
-              </thead>
-              <tbody>
-                {party.paymentsIn.map((p) => (
-                  <tr key={p.id}>
-                    <td>{formatDate(p.date)}</td>
-                    <td className="font-semibold text-green-700">{formatCurrency(p.amount)}</td>
-                    <td><span className="font-medium">{p.mode}</span></td>
-                    <td className="text-brand-900/55 font-mono text-[12.5px]">{p.reference ?? "—"}</td>
-                    <td>{p.tdsAmount > 0 ? formatCurrency(p.tdsAmount) : "—"}</td>
+          <>
+            {/* Mobile card list */}
+            <div className="md:hidden divide-y divide-brand-900/5">
+              {party.paymentsIn.map((p) => (
+                <div key={p.id} className="flex items-start justify-between gap-3 px-4 py-3.5">
+                  <div className="min-w-0 flex-1">
+                    <div className="flex items-center justify-between gap-2 mb-0.5">
+                      <span className="text-[12px] text-brand-900/50">{formatDate(p.date)}</span>
+                      <span className="text-[14px] font-bold text-green-700">{formatCurrency(p.amount)}</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <span className="text-[12px] font-medium text-brand-900/70">{p.mode}</span>
+                      {p.reference && (
+                        <span className="font-mono text-[11.5px] text-brand-900/45">{p.reference}</span>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+            {/* Desktop table */}
+            <div className="hidden md:block overflow-x-auto">
+              <table className="tms-table">
+                <thead>
+                  <tr>
+                    <th>Date</th>
+                    <th>Amount</th>
+                    <th>Mode</th>
+                    <th>Reference</th>
+                    <th>TDS</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+                </thead>
+                <tbody>
+                  {party.paymentsIn.map((p) => (
+                    <tr key={p.id}>
+                      <td>{formatDate(p.date)}</td>
+                      <td className="font-semibold text-green-700">{formatCurrency(p.amount)}</td>
+                      <td><span className="font-medium">{p.mode}</span></td>
+                      <td className="text-brand-900/55 font-mono text-[12.5px]">{p.reference ?? "—"}</td>
+                      <td>{p.tdsAmount > 0 ? formatCurrency(p.tdsAmount) : "—"}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </>
         )}
       </GlassCard>
     </div>
