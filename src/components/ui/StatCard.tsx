@@ -38,14 +38,14 @@ export default function StatCard({
     >
       <div className="flex items-start justify-between gap-4">
         <div className="flex-1 min-w-0">
-          <p className="text-[13px] font-bold uppercase tracking-widest text-brand-900/55 mb-3">
+          <p className="text-[13px] font-bold uppercase tracking-wider text-brand-900/55 mb-3 break-words">
             {title}
           </p>
           <p className="text-[26px] md:text-[38px] font-bold text-brand-900 leading-none mb-2 truncate">
             {value}
           </p>
           {subtitle && (
-            <p className="text-[12px] md:text-[14px] text-brand-900/55 truncate">{subtitle}</p>
+            <p className="text-[12px] md:text-[14px] text-brand-900/55 leading-snug">{subtitle}</p>
           )}
           {trend && (
             <div

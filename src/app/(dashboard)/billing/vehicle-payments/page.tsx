@@ -165,8 +165,6 @@ export default async function VehiclePaymentsPage({
       <PageHeader
         title="Vehicle Payments"
         subtitle="Track advance & balance payments to vehicle owners"
-        backHref="/billing"
-        backLabel="Back to Billing"
       />
 
       {/* Summary */}
