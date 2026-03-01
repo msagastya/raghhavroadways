@@ -89,6 +89,12 @@ export default async function BillPrintPage({
   const filled   = c ? 1 : 0
   const empties  = Math.max(0, TABLE_ROWS - filled)
 
+  // Weight / rate calculations
+  const weightMT   = c?.weight ? c.weight / 1000 : null
+  const chargedMT  = (c as any)?.chargedWeight ? (c as any).chargedWeight / 1000 : weightMT
+  const qtyMT      = chargedMT ?? weightMT
+  const rateMT     = qtyMT && qtyMT > 0 ? bill.subtotal / qtyMT : null
+
   return (
     <html lang="en">
       <head>
@@ -253,9 +259,9 @@ export default async function BillPrintPage({
                   <td className="al">{loc(c.fromCity, c.fromState)}</td>
                   <td className="al">{loc(c.toCity, c.toState)}</td>
                   <td className="al">{contents}</td>
-                  <td>{c.weight ? `${c.weight.toLocaleString("en-IN")}KG` : ""}</td>
-                  <td></td>
-                  <td className="ar">{fa(c.freightAmount)}</td>
+                  <td>{qtyMT ? qtyMT.toFixed(3) + " MT" : ""}</td>
+                  <td className="ar">{rateMT ? fa(rateMT) : ""}</td>
+                  <td className="ar">{fa(bill.subtotal)}</td>
                 </tr>
               )}
               {Array.from({length: empties}).map((_,i) => (
@@ -275,11 +281,11 @@ export default async function BillPrintPage({
             <div className="tr">
               <div className="tl">TOTAL</div>
               <div className="tv" />
-              <div className="ta">{fa(bill.subtotal)}</div>
+              <div className="ta">{fa(bill.totalAmount)}</div>
             </div>
             <div className="tr">
               <div className="tl">RUPEES</div>
-              <div className="tv">{toWords(bill.subtotal)}</div>
+              <div className="tv">{toWords(bill.totalAmount)}</div>
               <div className="ta" />
             </div>
           </div>

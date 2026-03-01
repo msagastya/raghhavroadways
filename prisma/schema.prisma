@@ -198,6 +198,15 @@ model Consignment {
   advancePaid    Float          @default(0)
   balancePaid    Float          @default(0)
 
+  // LR rate-table breakdown (freightAmount = sum of all four)
+  surcharge     Float   @default(0)
+  otherCharges  Float   @default(0)
+  stCharges     Float   @default(0)
+  // Cargo weight
+  chargedWeight Float?
+  // Insurance risk
+  isOwnerRisk   Boolean @default(true)
+
   status    ConsignmentStatus @default(BOOKED)
   notes     String?
   createdAt DateTime          @default(now())

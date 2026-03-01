@@ -4,7 +4,7 @@ import { useState, useTransition } from "react"
 import { useRouter } from "next/navigation"
 import { createConsignment, type ConsignmentInput } from "@/actions/consignments"
 import toast from "react-hot-toast"
-import { Loader2, Save, Plus, X } from "lucide-react"
+import { Loader2, Save, Plus, X, ShieldCheck, ShieldAlert } from "lucide-react"
 import { INDIAN_STATES, CITIES_BY_STATE } from "@/lib/locations"
 import DocumentUpload from "@/components/ui/DocumentUpload"
 
@@ -17,11 +17,11 @@ function S({ children }: { children: React.ReactNode }) {
   )
 }
 
-function F({ label, children, required, half }: {
-  label: string; children: React.ReactNode; required?: boolean; half?: boolean
+function F({ label, children, required }: {
+  label: string; children: React.ReactNode; required?: boolean
 }) {
   return (
-    <div className={half ? "" : ""}>
+    <div>
       <label className="block text-[12px] font-semibold text-brand-900/60 uppercase tracking-wide mb-1.5">
         {label}{required && <span className="text-red-400 ml-0.5">*</span>}
       </label>
@@ -47,6 +47,7 @@ export default function ConsignmentForm({ companies, allParties, agents, vehicle
 
   const [descriptions, setDescriptions] = useState<string[]>([])
   const [descInput,    setDescInput]    = useState("")
+  const [isOwnerRisk,  setIsOwnerRisk]  = useState(true)
 
   function addDesc() {
     const v = descInput.trim()
@@ -68,10 +69,14 @@ export default function ConsignmentForm({ companies, allParties, agents, vehicle
     toState:        "",
     freightType:    "FTL",
     weight:         "",
+    chargedWeight:  "",
     quantity:       "",
     unit:           "",
     declaredValue:  "",
-    freightAmount:  "",
+    baseFreight:    "",
+    surcharge:      "",
+    otherCharges:   "",
+    stCharges:      "",
     paymentType:    "TBB",
     ewayBillNumber:   "",
     ewayBillDocUrl:   "",
@@ -87,14 +92,22 @@ export default function ConsignmentForm({ companies, allParties, agents, vehicle
 
   function set(k: string, v: string) { setForm((p) => ({ ...p, [k]: v })) }
 
+  const totalFreight =
+    (Number(form.baseFreight)  || 0) +
+    (Number(form.surcharge)    || 0) +
+    (Number(form.otherCharges) || 0) +
+    (Number(form.stCharges)    || 0)
+
+  const balancePayable = (Number(form.vehicleFreight) || 0) - (Number(form.advancePaid) || 0)
+
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
-    if (!form.consignorId)      { toast.error("Select consignor"); return }
-    if (!form.consigneeId)      { toast.error("Select consignee"); return }
-    if (!form.fromCity)         { toast.error("Enter origin city"); return }
-    if (!form.toCity)           { toast.error("Enter destination city"); return }
+    if (!form.consignorId)         { toast.error("Select consignor"); return }
+    if (!form.consigneeId)         { toast.error("Select consignee"); return }
+    if (!form.fromCity)            { toast.error("Enter origin city"); return }
+    if (!form.toCity)              { toast.error("Enter destination city"); return }
     if (descriptions.length === 0) { toast.error("Add at least one content description"); return }
-    if (!form.freightAmount)    { toast.error("Enter freight amount"); return }
+    if (totalFreight <= 0)         { toast.error("Enter freight amount"); return }
 
     const data: ConsignmentInput = {
       bookingDate:    form.bookingDate,
@@ -107,22 +120,27 @@ export default function ConsignmentForm({ companies, allParties, agents, vehicle
       toState:        form.toState,
       description:    JSON.stringify(descriptions),
       freightType:    form.freightType as ConsignmentInput["freightType"],
-      weight:         form.weight        ? Number(form.weight)        : null,
-      quantity:       form.quantity      ? Number(form.quantity)      : null,
-      unit:           form.unit          || null,
-      declaredValue:  form.declaredValue ? Number(form.declaredValue) : null,
-      freightAmount:  Number(form.freightAmount),
+      weight:         form.weight         ? Number(form.weight)         : null,
+      chargedWeight:  form.chargedWeight  ? Number(form.chargedWeight)  : null,
+      quantity:       form.quantity       ? Number(form.quantity)       : null,
+      unit:           form.unit           || null,
+      declaredValue:  form.declaredValue  ? Number(form.declaredValue)  : null,
+      freightAmount:  totalFreight,
+      surcharge:      Number(form.surcharge)    || 0,
+      otherCharges:   Number(form.otherCharges) || 0,
+      stCharges:      Number(form.stCharges)    || 0,
+      isOwnerRisk,
       paymentType:    form.paymentType as ConsignmentInput["paymentType"],
       ewayBillNumber:   form.ewayBillNumber   || null,
       ewayBillDocUrl:   form.ewayBillDocUrl   || null,
       invoiceChallanNo: form.invoiceChallanNo || null,
       challanDocUrl:    form.challanDocUrl    || null,
       vehicleId:        form.vehicleId        || null,
-      driverName:     form.driverName    || null,
-      driverPhone:    form.driverPhone   || null,
+      driverName:     form.driverName     || null,
+      driverPhone:    form.driverPhone    || null,
       vehicleFreight: form.vehicleFreight ? Number(form.vehicleFreight) : null,
-      advancePaid:    form.advancePaid   ? Number(form.advancePaid)   : 0,
-      notes:          form.notes         || null,
+      advancePaid:    Number(form.advancePaid) || 0,
+      notes:          form.notes || null,
     }
 
     start(async () => {
@@ -132,8 +150,6 @@ export default function ConsignmentForm({ companies, allParties, agents, vehicle
       router.push(`/consignments/${r.id}`)
     })
   }
-
-  const balancePayable = (Number(form.vehicleFreight) || 0) - (Number(form.advancePaid) || 0)
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
@@ -160,14 +176,14 @@ export default function ConsignmentForm({ companies, allParties, agents, vehicle
       <div className="glass rounded-2xl p-4 md:p-6">
         <S>Parties</S>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <F label="Consignor (Sender)" required>
+          <F label="Consignor M/s (Sender)" required>
             <select className="input-field bg-white" value={form.consignorId}
                     onChange={(e) => set("consignorId", e.target.value)} required>
               <option value="">Select company / sender...</option>
               {companies.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
             </select>
           </F>
-          <F label="Consignee (Receiver)" required>
+          <F label="Consignee M/s (Receiver)" required>
             <select className="input-field bg-white" value={form.consigneeId}
                     onChange={(e) => set("consigneeId", e.target.value)} required>
               <option value="">Select receiver...</option>
@@ -229,11 +245,13 @@ export default function ConsignmentForm({ companies, allParties, agents, vehicle
 
       {/* Cargo */}
       <div className="glass rounded-2xl p-4 md:p-6">
-        <S>Cargo Details</S>
+        <S>Cargo Details (Said to Contain)</S>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+
+          {/* Description */}
           <div className="md:col-span-2">
             <label className="block text-[12px] font-semibold text-brand-900/60 uppercase tracking-wide mb-1.5">
-              Content Description<span className="text-red-400 ml-0.5">*</span>
+              Description<span className="text-red-400 ml-0.5">*</span>
             </label>
             <div className="flex gap-2">
               <input
@@ -267,6 +285,7 @@ export default function ConsignmentForm({ companies, allParties, agents, vehicle
               </div>
             )}
           </div>
+
           <F label="Freight Type" required>
             <select className="input-field bg-white" value={form.freightType}
                     onChange={(e) => set("freightType", e.target.value)}>
@@ -276,36 +295,134 @@ export default function ConsignmentForm({ companies, allParties, agents, vehicle
               <option value="OTHER">Other</option>
             </select>
           </F>
-          {(form.freightType === "WEIGHT_BASIS" || form.freightType === "LTL") && (
-            <F label="Weight (KG)">
-              <input type="number" className="input-field" placeholder="e.g. 5000" min={0}
-                     value={form.weight} onChange={(e) => set("weight", e.target.value)} />
-            </F>
-          )}
-          <F label="Quantity">
-            <input type="number" className="input-field" placeholder="e.g. 100" min={0}
+
+          <F label="No. of Packages">
+            <input type="number" className="input-field" placeholder="e.g. 10" min={0}
                    value={form.quantity} onChange={(e) => set("quantity", e.target.value)} />
           </F>
+
           <F label="Unit">
             <input type="text" className="input-field" placeholder="e.g. Bags, Boxes, MT"
                    value={form.unit} onChange={(e) => set("unit", e.target.value)} />
           </F>
+
           <F label="Declared Value (₹)">
-            <input type="number" className="input-field" placeholder="Insurance value" min={0}
+            <input type="number" className="input-field" placeholder="Insurance / declared value" min={0}
                    value={form.declaredValue} onChange={(e) => set("declaredValue", e.target.value)} />
           </F>
+
+          {/* Weight: Actual + Charged side by side */}
+          <div className="md:col-span-2">
+            <p className="text-[12px] font-semibold text-brand-900/60 uppercase tracking-wide mb-2">Weight (KG)</p>
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <label className="text-[11px] text-brand-900/45 font-medium block mb-1">Actual</label>
+                <input type="number" className="input-field" placeholder="e.g. 5000" min={0}
+                       value={form.weight} onChange={(e) => set("weight", e.target.value)} />
+              </div>
+              <div>
+                <label className="text-[11px] text-brand-900/45 font-medium block mb-1">Charged</label>
+                <input type="number" className="input-field" placeholder="e.g. 5200" min={0}
+                       value={form.chargedWeight} onChange={(e) => set("chargedWeight", e.target.value)} />
+              </div>
+            </div>
+          </div>
         </div>
       </div>
 
-      {/* Freight & Payment */}
+      {/* Freight Rate Table */}
       <div className="glass rounded-2xl p-4 md:p-6">
-        <S>Freight & Payment</S>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <F label="Freight Amount (₹)" required>
-            <input type="number" className="input-field font-semibold" placeholder="Amount company pays us"
-                   min={0} value={form.freightAmount}
-                   onChange={(e) => set("freightAmount", e.target.value)} required />
-          </F>
+        <S>Freight Rate</S>
+
+        {/* Rate table */}
+        <div className="rounded-xl overflow-hidden mb-4" style={{ border: "1px solid rgba(13,43,26,0.1)" }}>
+          {/* Header */}
+          <div className="grid grid-cols-[1fr_180px] gap-3 px-4 py-2.5"
+               style={{ background: "rgba(13,43,26,0.05)", borderBottom: "1px solid rgba(13,43,26,0.08)" }}>
+            <span className="text-[11px] font-bold uppercase tracking-wider text-brand-900/50">Description</span>
+            <span className="text-[11px] font-bold uppercase tracking-wider text-brand-900/50 text-right">Amount (₹)</span>
+          </div>
+
+          {/* Rows */}
+          {(["baseFreight", "surcharge", "otherCharges", "stCharges"] as const).map((key) => {
+            const labels: Record<string, string> = {
+              baseFreight:  "Freight",
+              surcharge:    "Surcharge",
+              otherCharges: "Other Charges",
+              stCharges:    "St. Charges",
+            }
+            const isRequired = key === "baseFreight"
+            return (
+              <div key={key}
+                   className="grid grid-cols-[1fr_180px] gap-3 px-4 py-2.5 items-center"
+                   style={{ borderBottom: "1px solid rgba(13,43,26,0.06)" }}>
+                <span className="text-[13px] text-brand-900/80">
+                  {labels[key]}{isRequired && <span className="text-red-400 ml-0.5">*</span>}
+                </span>
+                <div className="relative">
+                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-[13px] text-brand-900/35 pointer-events-none">₹</span>
+                  <input
+                    type="number"
+                    className="input-field pl-7 text-right"
+                    placeholder="0"
+                    min={0}
+                    value={form[key]}
+                    onChange={(e) => set(key, e.target.value)}
+                  />
+                </div>
+              </div>
+            )
+          })}
+
+          {/* Total row */}
+          <div className="grid grid-cols-[1fr_180px] gap-3 px-4 py-3 items-center"
+               style={{ background: "rgba(13,43,26,0.05)", borderTop: "2px solid rgba(13,43,26,0.12)" }}>
+            <span className="text-[13px] font-bold text-brand-900 uppercase tracking-wider">TOTAL</span>
+            <span className="text-[18px] font-bold text-brand-900 text-right">
+              ₹{totalFreight > 0 ? totalFreight.toLocaleString("en-IN") : "—"}
+            </span>
+          </div>
+        </div>
+
+        {/* Insurance Risk */}
+        <div className="mb-4">
+          <p className="text-[12px] font-semibold text-brand-900/60 uppercase tracking-wide mb-2">Insurance Risk</p>
+          <div className="flex gap-3">
+            <button
+              type="button"
+              onClick={() => setIsOwnerRisk(true)}
+              className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-[13px] font-semibold transition-all ${
+                isOwnerRisk
+                  ? "text-amber-700"
+                  : "text-brand-900/50 hover:text-brand-900/70"
+              }`}
+              style={isOwnerRisk
+                ? { background: "rgba(251,191,36,0.12)", border: "1px solid rgba(251,191,36,0.35)" }
+                : { background: "rgba(13,43,26,0.04)", border: "1px solid rgba(13,43,26,0.1)" }}
+            >
+              <ShieldAlert size={15} />
+              Owner&apos;s Risk
+            </button>
+            <button
+              type="button"
+              onClick={() => setIsOwnerRisk(false)}
+              className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-[13px] font-semibold transition-all ${
+                !isOwnerRisk
+                  ? "text-blue-700"
+                  : "text-brand-900/50 hover:text-brand-900/70"
+              }`}
+              style={!isOwnerRisk
+                ? { background: "rgba(59,130,246,0.12)", border: "1px solid rgba(59,130,246,0.35)" }
+                : { background: "rgba(13,43,26,0.04)", border: "1px solid rgba(13,43,26,0.1)" }}
+            >
+              <ShieldCheck size={15} />
+              Carrier&apos;s Risk
+            </button>
+          </div>
+        </div>
+
+        {/* Payment type + reference numbers */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <F label="Payment Type">
             <select className="input-field bg-white" value={form.paymentType}
                     onChange={(e) => set("paymentType", e.target.value)}>
@@ -314,13 +431,13 @@ export default function ConsignmentForm({ companies, allParties, agents, vehicle
               <option value="TO_PAY">To Pay (Consignee Pays)</option>
             </select>
           </F>
-          <F label="E-way Bill Number">
+          <F label="E-way Bill No.">
             <input type="text" className="input-field font-mono" placeholder="12-digit EWB number"
                    maxLength={12} value={form.ewayBillNumber}
                    onChange={(e) => set("ewayBillNumber", e.target.value)} />
           </F>
-          <F label="Invoice / Challan No.">
-            <input type="text" className="input-field font-mono" placeholder="Supplier invoice or challan number"
+          <F label="Invoice / Challan / Ref. No.">
+            <input type="text" className="input-field font-mono" placeholder="Supplier invoice or challan"
                    value={form.invoiceChallanNo}
                    onChange={(e) => set("invoiceChallanNo", e.target.value)} />
           </F>
@@ -363,7 +480,7 @@ export default function ConsignmentForm({ companies, allParties, agents, vehicle
               ))}
             </select>
           </F>
-          <div /> {/* spacer */}
+          <div />
           <F label="Driver Name">
             <input type="text" className="input-field" placeholder="Driver's full name"
                    value={form.driverName} onChange={(e) => set("driverName", e.target.value)} />

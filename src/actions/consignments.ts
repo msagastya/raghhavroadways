@@ -19,10 +19,15 @@ export type ConsignmentInput = {
   description:     string
   freightType:     "FTL" | "LTL" | "WEIGHT_BASIS" | "OTHER"
   weight?:         number | null
+  chargedWeight?:  number | null
   quantity?:       number | null
   unit?:           string | null
   declaredValue?:  number | null
   freightAmount:   number
+  surcharge?:      number
+  otherCharges?:   number
+  stCharges?:      number
+  isOwnerRisk?:    boolean
   paymentType:     "PAID" | "TO_PAY" | "TBB"
   ewayBillNumber?:   string | null
   ewayBillDocUrl?:   string | null
@@ -86,10 +91,15 @@ export async function createConsignment(data: ConsignmentInput) {
           description:    data.description.trim(),
           freightType:    data.freightType,
           weight:         data.weight         ?? null,
+          chargedWeight:  data.chargedWeight  ?? null,
           quantity:       data.quantity       ?? null,
           unit:           data.unit           ?? null,
           declaredValue:  data.declaredValue  ?? null,
           freightAmount:  data.freightAmount,
+          surcharge:      data.surcharge      ?? 0,
+          otherCharges:   data.otherCharges   ?? 0,
+          stCharges:      data.stCharges      ?? 0,
+          isOwnerRisk:    data.isOwnerRisk    ?? true,
           paymentType:    data.paymentType,
           ewayBillNumber:   data.ewayBillNumber   || null,
           ewayBillDocUrl:   data.ewayBillDocUrl   || null,
@@ -205,10 +215,15 @@ export async function updateConsignment(id: string, data: Partial<ConsignmentInp
         description:    data.description    ?? undefined,
         freightType:    data.freightType    ?? undefined,
         weight:         data.weight         ?? null,
+        chargedWeight:  data.chargedWeight  ?? null,
         quantity:       data.quantity       ?? null,
         unit:           data.unit           ?? null,
         declaredValue:  data.declaredValue  ?? null,
         freightAmount:  data.freightAmount  ?? undefined,
+        surcharge:      data.surcharge      ?? undefined,
+        otherCharges:   data.otherCharges   ?? undefined,
+        stCharges:      data.stCharges      ?? undefined,
+        isOwnerRisk:    data.isOwnerRisk    ?? undefined,
         paymentType:    data.paymentType    ?? undefined,
         ewayBillNumber:   data.ewayBillNumber   ?? null,
         ewayBillDocUrl:   data.ewayBillDocUrl   ?? null,

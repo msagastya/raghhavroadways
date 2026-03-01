@@ -9,6 +9,7 @@ import { formatCurrency, formatDate } from "@/lib/utils"
 import {
   Building2, UserCheck, KeyRound, Truck, MapPin, Package,
   IndianRupee, FileText, Pencil, ArrowRight, CheckCircle2, Clock, Receipt,
+  ShieldAlert, ShieldCheck,
 } from "lucide-react"
 import { ConsignmentStatus } from "@prisma/client"
 
@@ -123,9 +124,23 @@ export default async function ConsignmentDetailPage({
           <SectionH icon={Package} title="Cargo Details" />
           <div className="space-y-3 mt-4">
             <Row label="Description"  value={c.description} />
-            {c.weight         && <Row label="Weight"      value={`${c.weight.toLocaleString()} KG`} />}
-            {c.quantity       && <Row label="Quantity"    value={`${c.quantity} ${c.unit ?? ""}`} />}
-            {c.declaredValue  && <Row label="Decl. Value" value={formatCurrency(c.declaredValue)} />}
+            {c.quantity       && <Row label="No. of Packages" value={`${c.quantity} ${c.unit ?? ""}`} />}
+            {c.weight         && <Row label="Actual Weight"   value={`${c.weight.toLocaleString()} KG`} />}
+            {c.chargedWeight  && <Row label="Charged Weight"  value={`${c.chargedWeight.toLocaleString()} KG`} />}
+            {c.declaredValue  && <Row label="Decl. Value"     value={formatCurrency(c.declaredValue)} />}
+            <div className="flex items-center gap-2 pt-1">
+              {c.isOwnerRisk ? (
+                <>
+                  <ShieldAlert size={13} className="text-amber-500 shrink-0" />
+                  <span className="text-[12.5px] font-semibold text-amber-600">Owner&apos;s Risk</span>
+                </>
+              ) : (
+                <>
+                  <ShieldCheck size={13} className="text-blue-500 shrink-0" />
+                  <span className="text-[12.5px] font-semibold text-blue-600">Carrier&apos;s Risk</span>
+                </>
+              )}
+            </div>
           </div>
         </GlassCard>
 
@@ -143,7 +158,19 @@ export default async function ConsignmentDetailPage({
         <GlassCard>
           <SectionH icon={IndianRupee} title="Freight Financials" />
           <div className="space-y-3 mt-4">
-            <Row label="Freight Amount" value={formatCurrency(c.freightAmount)} bold />
+            {/* Breakdown — only show if any charges exist */}
+            {(c.surcharge > 0 || c.otherCharges > 0 || c.stCharges > 0) ? (
+              <>
+                <Row label="Freight"       value={formatCurrency(c.freightAmount - c.surcharge - c.otherCharges - c.stCharges)} />
+                {c.surcharge    > 0 && <Row label="Surcharge"      value={formatCurrency(c.surcharge)} />}
+                {c.otherCharges > 0 && <Row label="Other Charges"  value={formatCurrency(c.otherCharges)} />}
+                {c.stCharges    > 0 && <Row label="St. Charges"    value={formatCurrency(c.stCharges)} />}
+                <div className="h-px bg-brand-900/8" />
+                <Row label="Total Freight" value={formatCurrency(c.freightAmount)} bold />
+              </>
+            ) : (
+              <Row label="Freight Amount" value={formatCurrency(c.freightAmount)} bold />
+            )}
             {c.vehicleFreight && (
               <>
                 <div className="h-px bg-brand-900/6" />

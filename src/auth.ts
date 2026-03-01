@@ -29,7 +29,11 @@ function resetRateLimit(email: string) {
 // ─── NextAuth ─────────────────────────────────────────────────────────────────
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
-  session: { strategy: "jwt" },
+  session: {
+    strategy: "jwt",
+    maxAge: 60 * 60 * 24 * 365,   // 1 year — effectively "never log out"
+    updateAge: 60 * 60 * 24,      // refresh cookie once per day if active
+  },
   providers: [
     Credentials({
       credentials: {

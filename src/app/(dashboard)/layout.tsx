@@ -4,6 +4,7 @@ import { useState, useRef, useCallback, useEffect } from "react"
 import { usePathname } from "next/navigation"
 import Sidebar from "@/components/layout/Sidebar"
 import Header from "@/components/layout/Header"
+import FlowBackground from "@/components/ui/FlowBackground"
 
 const SIDEBAR_W = 280 // px
 
@@ -30,6 +31,9 @@ export default function DashboardLayout({
 
   return (
     <div className="flex h-screen overflow-hidden">
+
+      {/* Watery flowing blob background */}
+      <FlowBackground />
 
       {/* Spacer — pushes content right on desktop only, never on mobile */}
       <div className="sidebar-spacer" data-open={String(open)} />
